@@ -23,7 +23,7 @@ Every module has its own on and off switch. When a module is off it does nothing
 
 ## Install
 
-**Download:** signed and notarized installers will be posted under [Releases](https://github.com/CNERDAI/cnerd-mac-utilities/releases). Open the `.dmg` and drag the app to Applications.
+**Download:** get [CNERD-Mac-Utilities-1.0.0.dmg](https://github.com/CNERDAI/cnerd-mac-utilities/releases/latest) from the latest release. It is signed and notarized by Apple. Open the `.dmg` and drag the app to Applications.
 
 **Build it yourself:**
 
