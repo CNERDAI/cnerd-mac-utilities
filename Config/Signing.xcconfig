@@ -1,0 +1,16 @@
+// Code signing.
+//
+// By default the app is signed "to run locally" (ad-hoc), which needs no Apple developer account.
+// The catch: macOS forgets the Accessibility permission after every rebuild of an ad-hoc signed app.
+//
+// To keep the permission between rebuilds, create Config/Signing.local.xcconfig (it is not committed)
+// with your own Apple Development certificate, for example:
+//
+//   CODE_SIGN_IDENTITY = Apple Development: Your Name (ABCDE12345)
+//   DEVELOPMENT_TEAM = ABCDE12345
+//
+CODE_SIGN_STYLE = Manual
+CODE_SIGN_IDENTITY = -
+DEVELOPMENT_TEAM =
+
+#include? "Signing.local.xcconfig"

@@ -1,0 +1,16 @@
+.DS_Store
+build/
+build-release/
+release/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.log
+
+# Private settings for one developer's Mac
+Config/Signing.local.xcconfig
+Config/release.env
+
+# Earlier icon drafts. The current icon master is Artwork/App-Icon3.png
+Artwork/App-Icon.png
+Artwork/App-Icon2.png

@@ -1,0 +1,716 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		03D99366B2D85C5B9F50C42A /* ScreenGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F731325BAE4221476ED55778 /* ScreenGeometry.swift */; };
+		0955F85FF5FBD9CD76BF519F /* AppSymbol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253D2DDD1EB783E35D4C74B9 /* AppSymbol.swift */; };
+		0ADDCB849AD4AEBB28EB9343 /* AccessibilityWindowService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BE0012217EB9446A1A22D69 /* AccessibilityWindowService.swift */; };
+		127F1762F73B0D74D92B0FCA /* GeneralSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25819696621245BE6761785C /* GeneralSettingsView.swift */; };
+		21FAA220F55A513F608D4389 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC8C7EB549CAAF811343F2B /* DashboardView.swift */; };
+		280CF15967A7D0CA29EAB40A /* QuickFolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A668E2DB44D4441707B5AB6 /* QuickFolder.swift */; };
+		29A696951C3AF4F0F4D0A832 /* SidebarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F576A672D4C85F37849D5CD5 /* SidebarItem.swift */; };
+		2A302C9861444F7C049D62B8 /* KeyCombo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB07098A44522D5F64D7D5BB /* KeyCombo.swift */; };
+		304F0200D43BFC8FE3AA9441 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B52E1B874DF067152096A8D /* AppEnvironment.swift */; };
+		30F1CCFAB8FC4525597EE84E /* DesktopController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBFAC1C77813DA9C19B6402D /* DesktopController.swift */; };
+		33CE3B42D582325DF3ABD7F0 /* TaskbarPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72139D9D27208280553DF6E7 /* TaskbarPanel.swift */; };
+		3976A2F1BE5B5960E8A61DFA /* GreenButtonInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49FDCAFA29F4E78C7D5C98C /* GreenButtonInterceptor.swift */; };
+		4A35D3042B96ACBCF8C746A1 /* UtilityModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0C84886A7A2EC8C6750E319 /* UtilityModule.swift */; };
+		4AAEDE151CAE9FC4376D1FFA /* SettingsComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7088B1211E9C397021F5C742 /* SettingsComponents.swift */; };
+		4FB0EEB1DCC9CF4F0C6729A6 /* DesktopSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5105B0CB8F16DA59BC470782 /* DesktopSettingsView.swift */; };
+		579C239874669C2439D3FAC7 /* WindowFrameStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A9A8AF5D467BF2C206E077B /* WindowFrameStore.swift */; };
+		59AB0C3B16C1E1DCE0BF82A2 /* HotKeyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E4FCBE4903807A3951F22 /* HotKeyService.swift */; };
+		5CB8C5BE082B1EC4402D867C /* ScreenGeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62A8B941233EE07B1A785925 /* ScreenGeometryTests.swift */; };
+		62BC845476B7AE88ECB00ACE /* WindowManagerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4CD99A432B7C812E9D53C27 /* WindowManagerSettingsView.swift */; };
+		779C4A89048AB9B955126EEA /* ShortcutAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6540830C092999531FE253D6 /* ShortcutAction.swift */; };
+		7B88DBF92C0A30806D108C3C /* MenuBarContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5F2302ACEBFCD6F4DDC651 /* MenuBarContent.swift */; };
+		7C8CF0E156F03A63D1F25643 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0062B3A162D09950814E38E /* AppInfo.swift */; };
+		7F5E5A1E779590EC07E81CF5 /* CNERDMacUtilitiesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B4A772B10CE3C59C324B1D8 /* CNERDMacUtilitiesApp.swift */; };
+		81FADFD5F99E2A6052D0C85D /* TaskbarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1E6CD02D321C2EBA6197833 /* TaskbarController.swift */; };
+		82F6C8FBAE10399EF97A4DE1 /* PermissionsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F06BAB60F2C7F68346E34C80 /* PermissionsService.swift */; };
+		847E8535C39066DE8B4031CB /* MainWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E82294E2A2E0F42FEE12A7 /* MainWindowView.swift */; };
+		84B519597954FB28C950DAC0 /* DesktopItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F41B101A0591A009597684ED /* DesktopItem.swift */; };
+		87003F15CF09F92F67035BC6 /* DockInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4DB74DC933DD5B64CFD503 /* DockInfo.swift */; };
+		93540F543AF8B8478B13DBB0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2433D41FF90154A38570EE5A /* AppDelegate.swift */; };
+		99AAD7BF3D9307236889EBF2 /* TaskbarModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8472B806FB0065E22E413673 /* TaskbarModels.swift */; };
+		9BBFAED9C9872E3707BE59C2 /* FinderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D67757BE38CA4493143DF34 /* FinderController.swift */; };
+		A82279C9D4A3E0045A4A75A1 /* NotificationCenter+Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40F5558338BD5FEB794AFF1 /* NotificationCenter+Main.swift */; };
+		A8FCBC4CF2A447E1A33DFF6D /* DisplayInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67685324C754936D279CE6F8 /* DisplayInfo.swift */; };
+		ABED1B643B382F3321584FAC /* TaskbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00832B48EA43F1DFF0CAD7D /* TaskbarView.swift */; };
+		B1E1089D0CF1534AFF292DD4 /* FinderSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 400F4977051965266AC58DAD /* FinderSettingsView.swift */; };
+		B2412B3CBE43676DFCAB0376 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94191225FD58D2AD780672D6 /* ModelTests.swift */; };
+		B490496B94B92F5E94CF4C7F /* LoginItemService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0A8A7DAFF29447F719137F /* LoginItemService.swift */; };
+		CA671229DB5FDD24F52D6FB0 /* WindowPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B4F4B9FB56D7BE0FCE4B927 /* WindowPosition.swift */; };
+		D6A183097BAEEB4F0AE9C557 /* TaskbarSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A88CB9EBDF545CDE1D34AC /* TaskbarSettingsView.swift */; };
+		D92D4CB716D4373BE2DC6798 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDFAA15452158B6A251AD99 /* AppSettings.swift */; };
+		DAF94D61D9E62E8C3A9567BD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BEE416BA10683A9E857DCD9E /* Assets.xcassets */; };
+		E9678352E480C5C70FDCE56B /* ShortcutRecorderRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F765B024ACA3CBEA01B9608 /* ShortcutRecorderRow.swift */; };
+		FBAEEA8B4D191024A67F0820 /* WindowManagerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BDB28D94A10C4F5B8F1BC68 /* WindowManagerController.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A231E09915C472C87E3A30EA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 92887EAFA4E5159BDC65D74D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0B965D880F1E02E143AF1E94;
+			remoteInfo = CNERDMacUtilities;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0B4F4B9FB56D7BE0FCE4B927 /* WindowPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowPosition.swift; sourceTree = "<group>"; };
+		2433D41FF90154A38570EE5A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		253D2DDD1EB783E35D4C74B9 /* AppSymbol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSymbol.swift; sourceTree = "<group>"; };
+		25819696621245BE6761785C /* GeneralSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingsView.swift; sourceTree = "<group>"; };
+		2B52E1B874DF067152096A8D /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
+		2DB601C9E092BCB13C2DC9CF /* Signing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>"; };
+		3F765B024ACA3CBEA01B9608 /* ShortcutRecorderRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutRecorderRow.swift; sourceTree = "<group>"; };
+		400F4977051965266AC58DAD /* FinderSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderSettingsView.swift; sourceTree = "<group>"; };
+		46A451985FAC79DB712DA201 /* CNERDMacUtilities.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CNERDMacUtilities.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4A668E2DB44D4441707B5AB6 /* QuickFolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickFolder.swift; sourceTree = "<group>"; };
+		4BE0012217EB9446A1A22D69 /* AccessibilityWindowService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityWindowService.swift; sourceTree = "<group>"; };
+		4F5F2302ACEBFCD6F4DDC651 /* MenuBarContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarContent.swift; sourceTree = "<group>"; };
+		5105B0CB8F16DA59BC470782 /* DesktopSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopSettingsView.swift; sourceTree = "<group>"; };
+		62A8B941233EE07B1A785925 /* ScreenGeometryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenGeometryTests.swift; sourceTree = "<group>"; };
+		6540830C092999531FE253D6 /* ShortcutAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutAction.swift; sourceTree = "<group>"; };
+		669E4FCBE4903807A3951F22 /* HotKeyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotKeyService.swift; sourceTree = "<group>"; };
+		67685324C754936D279CE6F8 /* DisplayInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayInfo.swift; sourceTree = "<group>"; };
+		6BDB28D94A10C4F5B8F1BC68 /* WindowManagerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManagerController.swift; sourceTree = "<group>"; };
+		7088B1211E9C397021F5C742 /* SettingsComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsComponents.swift; sourceTree = "<group>"; };
+		72139D9D27208280553DF6E7 /* TaskbarPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskbarPanel.swift; sourceTree = "<group>"; };
+		7A9A8AF5D467BF2C206E077B /* WindowFrameStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowFrameStore.swift; sourceTree = "<group>"; };
+		7D67757BE38CA4493143DF34 /* FinderController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderController.swift; sourceTree = "<group>"; };
+		8472B806FB0065E22E413673 /* TaskbarModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskbarModels.swift; sourceTree = "<group>"; };
+		94191225FD58D2AD780672D6 /* ModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelTests.swift; sourceTree = "<group>"; };
+		9B4A772B10CE3C59C324B1D8 /* CNERDMacUtilitiesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CNERDMacUtilitiesApp.swift; sourceTree = "<group>"; };
+		9F4DB74DC933DD5B64CFD503 /* DockInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DockInfo.swift; sourceTree = "<group>"; };
+		A4A88CB9EBDF545CDE1D34AC /* TaskbarSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskbarSettingsView.swift; sourceTree = "<group>"; };
+		ACC8C7EB549CAAF811343F2B /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		B00832B48EA43F1DFF0CAD7D /* TaskbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskbarView.swift; sourceTree = "<group>"; };
+		B1E6CD02D321C2EBA6197833 /* TaskbarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskbarController.swift; sourceTree = "<group>"; };
+		BB07098A44522D5F64D7D5BB /* KeyCombo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCombo.swift; sourceTree = "<group>"; };
+		BEE416BA10683A9E857DCD9E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		CBFAC1C77813DA9C19B6402D /* DesktopController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopController.swift; sourceTree = "<group>"; };
+		CEDFAA15452158B6A251AD99 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		D49FDCAFA29F4E78C7D5C98C /* GreenButtonInterceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreenButtonInterceptor.swift; sourceTree = "<group>"; };
+		D4CD99A432B7C812E9D53C27 /* WindowManagerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManagerSettingsView.swift; sourceTree = "<group>"; };
+		E00CD9FA39C5E90E3A3397CF /* CNERDMacUtilitiesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CNERDMacUtilitiesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E0C84886A7A2EC8C6750E319 /* UtilityModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilityModule.swift; sourceTree = "<group>"; };
+		E2E82294E2A2E0F42FEE12A7 /* MainWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowView.swift; sourceTree = "<group>"; };
+		F0062B3A162D09950814E38E /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
+		F06BAB60F2C7F68346E34C80 /* PermissionsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsService.swift; sourceTree = "<group>"; };
+		F40F5558338BD5FEB794AFF1 /* NotificationCenter+Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationCenter+Main.swift"; sourceTree = "<group>"; };
+		F41B101A0591A009597684ED /* DesktopItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopItem.swift; sourceTree = "<group>"; };
+		F576A672D4C85F37849D5CD5 /* SidebarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarItem.swift; sourceTree = "<group>"; };
+		F731325BAE4221476ED55778 /* ScreenGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenGeometry.swift; sourceTree = "<group>"; };
+		FE0A8A7DAFF29447F719137F /* LoginItemService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginItemService.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		055C63AD1BB4DCE7A1FC87DB /* WindowManager */ = {
+			isa = PBXGroup;
+			children = (
+				4BE0012217EB9446A1A22D69 /* AccessibilityWindowService.swift */,
+				D49FDCAFA29F4E78C7D5C98C /* GreenButtonInterceptor.swift */,
+				F731325BAE4221476ED55778 /* ScreenGeometry.swift */,
+				7A9A8AF5D467BF2C206E077B /* WindowFrameStore.swift */,
+				6BDB28D94A10C4F5B8F1BC68 /* WindowManagerController.swift */,
+			);
+			path = WindowManager;
+			sourceTree = "<group>";
+		};
+		073AF8CD7F91AA4326D0B613 /* CNERDMacUtilitiesTests */ = {
+			isa = PBXGroup;
+			children = (
+				94191225FD58D2AD780672D6 /* ModelTests.swift */,
+				62A8B941233EE07B1A785925 /* ScreenGeometryTests.swift */,
+			);
+			path = CNERDMacUtilitiesTests;
+			sourceTree = "<group>";
+		};
+		07FCA4CC5818716711506F9A /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				5105B0CB8F16DA59BC470782 /* DesktopSettingsView.swift */,
+				400F4977051965266AC58DAD /* FinderSettingsView.swift */,
+				25819696621245BE6761785C /* GeneralSettingsView.swift */,
+				A4A88CB9EBDF545CDE1D34AC /* TaskbarSettingsView.swift */,
+				D4CD99A432B7C812E9D53C27 /* WindowManagerSettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		099FC3C5A4E8812B5E29121D /* DesktopManager */ = {
+			isa = PBXGroup;
+			children = (
+				CBFAC1C77813DA9C19B6402D /* DesktopController.swift */,
+			);
+			path = DesktopManager;
+			sourceTree = "<group>";
+		};
+		109BEEC3F4850F14FAF6700A /* CNERDMacUtilities */ = {
+			isa = PBXGroup;
+			children = (
+				D63B5E6670342F5A93454EFF /* App */,
+				2D878CA7B60A7CA4226D3094 /* Core */,
+				E11F2C90D5E6697393CB4C1F /* Models */,
+				B643BE25DE205544F352AAC9 /* Modules */,
+				CC0FE93CBFEF16E6F8CBD5BE /* Resources */,
+				D2E072775EE9F5F59869F63D /* Services */,
+				EAB17999AB174F2EDCF77C32 /* Views */,
+			);
+			path = CNERDMacUtilities;
+			sourceTree = "<group>";
+		};
+		2B83BFB513A2E013FE29CC2A /* MainWindow */ = {
+			isa = PBXGroup;
+			children = (
+				E2E82294E2A2E0F42FEE12A7 /* MainWindowView.swift */,
+				4F5F2302ACEBFCD6F4DDC651 /* MenuBarContent.swift */,
+			);
+			path = MainWindow;
+			sourceTree = "<group>";
+		};
+		2D878CA7B60A7CA4226D3094 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				2B52E1B874DF067152096A8D /* AppEnvironment.swift */,
+				F0062B3A162D09950814E38E /* AppInfo.swift */,
+				CEDFAA15452158B6A251AD99 /* AppSettings.swift */,
+				253D2DDD1EB783E35D4C74B9 /* AppSymbol.swift */,
+				F40F5558338BD5FEB794AFF1 /* NotificationCenter+Main.swift */,
+				F576A672D4C85F37849D5CD5 /* SidebarItem.swift */,
+				E0C84886A7A2EC8C6750E319 /* UtilityModule.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		5D51F1D8097E91C2CB3A06B0 /* Taskbar */ = {
+			isa = PBXGroup;
+			children = (
+				B1E6CD02D321C2EBA6197833 /* TaskbarController.swift */,
+				72139D9D27208280553DF6E7 /* TaskbarPanel.swift */,
+			);
+			path = Taskbar;
+			sourceTree = "<group>";
+		};
+		79A3E965007B6AD8F38375B1 = {
+			isa = PBXGroup;
+			children = (
+				109BEEC3F4850F14FAF6700A /* CNERDMacUtilities */,
+				073AF8CD7F91AA4326D0B613 /* CNERDMacUtilitiesTests */,
+				AB1626C6D78602107DF041D8 /* Config */,
+				9D52A238A51D6274905D6A40 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7CEC117B6EA687913106C10B /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				ACC8C7EB549CAAF811343F2B /* DashboardView.swift */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
+		9D52A238A51D6274905D6A40 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				46A451985FAC79DB712DA201 /* CNERDMacUtilities.app */,
+				E00CD9FA39C5E90E3A3397CF /* CNERDMacUtilitiesTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AB1626C6D78602107DF041D8 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				2DB601C9E092BCB13C2DC9CF /* Signing.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		B643BE25DE205544F352AAC9 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				099FC3C5A4E8812B5E29121D /* DesktopManager */,
+				E203E82FD8AB8A105443C285 /* FinderEnhancements */,
+				5D51F1D8097E91C2CB3A06B0 /* Taskbar */,
+				055C63AD1BB4DCE7A1FC87DB /* WindowManager */,
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
+		B85ABCA9CEBCEF784BE65145 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				7088B1211E9C397021F5C742 /* SettingsComponents.swift */,
+				3F765B024ACA3CBEA01B9608 /* ShortcutRecorderRow.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		CC0FE93CBFEF16E6F8CBD5BE /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				BEE416BA10683A9E857DCD9E /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		D2E072775EE9F5F59869F63D /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				9F4DB74DC933DD5B64CFD503 /* DockInfo.swift */,
+				669E4FCBE4903807A3951F22 /* HotKeyService.swift */,
+				FE0A8A7DAFF29447F719137F /* LoginItemService.swift */,
+				F06BAB60F2C7F68346E34C80 /* PermissionsService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		D3B3A8FD00E701040961D3D3 /* Taskbar */ = {
+			isa = PBXGroup;
+			children = (
+				B00832B48EA43F1DFF0CAD7D /* TaskbarView.swift */,
+			);
+			path = Taskbar;
+			sourceTree = "<group>";
+		};
+		D63B5E6670342F5A93454EFF /* App */ = {
+			isa = PBXGroup;
+			children = (
+				2433D41FF90154A38570EE5A /* AppDelegate.swift */,
+				9B4A772B10CE3C59C324B1D8 /* CNERDMacUtilitiesApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		E11F2C90D5E6697393CB4C1F /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F41B101A0591A009597684ED /* DesktopItem.swift */,
+				67685324C754936D279CE6F8 /* DisplayInfo.swift */,
+				BB07098A44522D5F64D7D5BB /* KeyCombo.swift */,
+				4A668E2DB44D4441707B5AB6 /* QuickFolder.swift */,
+				6540830C092999531FE253D6 /* ShortcutAction.swift */,
+				8472B806FB0065E22E413673 /* TaskbarModels.swift */,
+				0B4F4B9FB56D7BE0FCE4B927 /* WindowPosition.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		E203E82FD8AB8A105443C285 /* FinderEnhancements */ = {
+			isa = PBXGroup;
+			children = (
+				7D67757BE38CA4493143DF34 /* FinderController.swift */,
+			);
+			path = FinderEnhancements;
+			sourceTree = "<group>";
+		};
+		EAB17999AB174F2EDCF77C32 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B85ABCA9CEBCEF784BE65145 /* Components */,
+				7CEC117B6EA687913106C10B /* Dashboard */,
+				2B83BFB513A2E013FE29CC2A /* MainWindow */,
+				07FCA4CC5818716711506F9A /* Settings */,
+				D3B3A8FD00E701040961D3D3 /* Taskbar */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		034904C8D3F4E83F6060AB52 /* CNERDMacUtilitiesTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 476D3CADCF78857C786AC71D /* Build configuration list for PBXNativeTarget "CNERDMacUtilitiesTests" */;
+			buildPhases = (
+				192AE79F52799D42C88581C1 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3BB3457CD31F7B17DBA9C811 /* PBXTargetDependency */,
+			);
+			name = CNERDMacUtilitiesTests;
+			packageProductDependencies = (
+			);
+			productName = CNERDMacUtilitiesTests;
+			productReference = E00CD9FA39C5E90E3A3397CF /* CNERDMacUtilitiesTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		0B965D880F1E02E143AF1E94 /* CNERDMacUtilities */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E2CD56D75B049C7DAE84F829 /* Build configuration list for PBXNativeTarget "CNERDMacUtilities" */;
+			buildPhases = (
+				349E18EBD3F121D1B93811A0 /* Sources */,
+				B44C0468A7349E3B505B4B28 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CNERDMacUtilities;
+			packageProductDependencies = (
+			);
+			productName = CNERDMacUtilities;
+			productReference = 46A451985FAC79DB712DA201 /* CNERDMacUtilities.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		92887EAFA4E5159BDC65D74D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					034904C8D3F4E83F6060AB52 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Manual;
+					};
+					0B965D880F1E02E143AF1E94 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 11E1172634EF1C8776455D56 /* Build configuration list for PBXProject "CNERDMacUtilities" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 79A3E965007B6AD8F38375B1;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 9D52A238A51D6274905D6A40 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0B965D880F1E02E143AF1E94 /* CNERDMacUtilities */,
+				034904C8D3F4E83F6060AB52 /* CNERDMacUtilitiesTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B44C0468A7349E3B505B4B28 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DAF94D61D9E62E8C3A9567BD /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		192AE79F52799D42C88581C1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B2412B3CBE43676DFCAB0376 /* ModelTests.swift in Sources */,
+				5CB8C5BE082B1EC4402D867C /* ScreenGeometryTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		349E18EBD3F121D1B93811A0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0ADDCB849AD4AEBB28EB9343 /* AccessibilityWindowService.swift in Sources */,
+				93540F543AF8B8478B13DBB0 /* AppDelegate.swift in Sources */,
+				304F0200D43BFC8FE3AA9441 /* AppEnvironment.swift in Sources */,
+				7C8CF0E156F03A63D1F25643 /* AppInfo.swift in Sources */,
+				D92D4CB716D4373BE2DC6798 /* AppSettings.swift in Sources */,
+				0955F85FF5FBD9CD76BF519F /* AppSymbol.swift in Sources */,
+				7F5E5A1E779590EC07E81CF5 /* CNERDMacUtilitiesApp.swift in Sources */,
+				21FAA220F55A513F608D4389 /* DashboardView.swift in Sources */,
+				30F1CCFAB8FC4525597EE84E /* DesktopController.swift in Sources */,
+				84B519597954FB28C950DAC0 /* DesktopItem.swift in Sources */,
+				4FB0EEB1DCC9CF4F0C6729A6 /* DesktopSettingsView.swift in Sources */,
+				A8FCBC4CF2A447E1A33DFF6D /* DisplayInfo.swift in Sources */,
+				87003F15CF09F92F67035BC6 /* DockInfo.swift in Sources */,
+				9BBFAED9C9872E3707BE59C2 /* FinderController.swift in Sources */,
+				B1E1089D0CF1534AFF292DD4 /* FinderSettingsView.swift in Sources */,
+				127F1762F73B0D74D92B0FCA /* GeneralSettingsView.swift in Sources */,
+				3976A2F1BE5B5960E8A61DFA /* GreenButtonInterceptor.swift in Sources */,
+				59AB0C3B16C1E1DCE0BF82A2 /* HotKeyService.swift in Sources */,
+				2A302C9861444F7C049D62B8 /* KeyCombo.swift in Sources */,
+				B490496B94B92F5E94CF4C7F /* LoginItemService.swift in Sources */,
+				847E8535C39066DE8B4031CB /* MainWindowView.swift in Sources */,
+				7B88DBF92C0A30806D108C3C /* MenuBarContent.swift in Sources */,
+				A82279C9D4A3E0045A4A75A1 /* NotificationCenter+Main.swift in Sources */,
+				82F6C8FBAE10399EF97A4DE1 /* PermissionsService.swift in Sources */,
+				280CF15967A7D0CA29EAB40A /* QuickFolder.swift in Sources */,
+				03D99366B2D85C5B9F50C42A /* ScreenGeometry.swift in Sources */,
+				4AAEDE151CAE9FC4376D1FFA /* SettingsComponents.swift in Sources */,
+				779C4A89048AB9B955126EEA /* ShortcutAction.swift in Sources */,
+				E9678352E480C5C70FDCE56B /* ShortcutRecorderRow.swift in Sources */,
+				29A696951C3AF4F0F4D0A832 /* SidebarItem.swift in Sources */,
+				81FADFD5F99E2A6052D0C85D /* TaskbarController.swift in Sources */,
+				99AAD7BF3D9307236889EBF2 /* TaskbarModels.swift in Sources */,
+				33CE3B42D582325DF3ABD7F0 /* TaskbarPanel.swift in Sources */,
+				D6A183097BAEEB4F0AE9C557 /* TaskbarSettingsView.swift in Sources */,
+				ABED1B643B382F3321584FAC /* TaskbarView.swift in Sources */,
+				4A35D3042B96ACBCF8C746A1 /* UtilityModule.swift in Sources */,
+				579C239874669C2439D3FAC7 /* WindowFrameStore.swift in Sources */,
+				FBAEEA8B4D191024A67F0820 /* WindowManagerController.swift in Sources */,
+				62BC845476B7AE88ECB00ACE /* WindowManagerSettingsView.swift in Sources */,
+				CA671229DB5FDD24F52D6FB0 /* WindowPosition.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		3BB3457CD31F7B17DBA9C811 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0B965D880F1E02E143AF1E94 /* CNERDMacUtilities */;
+			targetProxy = A231E09915C472C87E3A30EA /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		7D181525E36B23925808305F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Config/CNERDMacUtilities.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = Config/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = ai.cnerd.MacUtilities;
+				PRODUCT_MODULE_NAME = CNERDMacUtilities;
+				PRODUCT_NAME = "CNERD Mac Utilities";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		98E2EF214C545240A9496605 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = ai.cnerd.MacUtilitiesTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CNERD Mac Utilities.app/Contents/MacOS/CNERD Mac Utilities";
+			};
+			name = Debug;
+		};
+		C66C236115688EBE42E0E958 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Config/CNERDMacUtilities.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = Config/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = ai.cnerd.MacUtilities;
+				PRODUCT_MODULE_NAME = CNERDMacUtilities;
+				PRODUCT_NAME = "CNERD Mac Utilities";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		CA6F95CC7857A136CF32B0FF /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2DB601C9E092BCB13C2DC9CF /* Signing.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		F0DF70B5A48520B4275CE216 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2DB601C9E092BCB13C2DC9CF /* Signing.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		F69483949AE12F1B5D9EDABA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = ai.cnerd.MacUtilitiesTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CNERD Mac Utilities.app/Contents/MacOS/CNERD Mac Utilities";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		11E1172634EF1C8776455D56 /* Build configuration list for PBXProject "CNERDMacUtilities" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F0DF70B5A48520B4275CE216 /* Debug */,
+				CA6F95CC7857A136CF32B0FF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		476D3CADCF78857C786AC71D /* Build configuration list for PBXNativeTarget "CNERDMacUtilitiesTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				98E2EF214C545240A9496605 /* Debug */,
+				F69483949AE12F1B5D9EDABA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E2CD56D75B049C7DAE84F829 /* Build configuration list for PBXNativeTarget "CNERDMacUtilities" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7D181525E36B23925808305F /* Debug */,
+				C66C236115688EBE42E0E958 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 92887EAFA4E5159BDC65D74D /* Project object */;
+}

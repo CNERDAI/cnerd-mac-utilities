@@ -1,0 +1,78 @@
+# XcodeGen project definition. This file is the source of truth for the Xcode project.
+# After adding, moving, or deleting source files run:  xcodegen generate
+name: CNERDMacUtilities
+
+options:
+  bundleIdPrefix: ai.cnerd
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+
+configFiles:
+  Debug: Config/Signing.xcconfig
+  Release: Config/Signing.xcconfig
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+
+targets:
+  CNERDMacUtilities:
+    type: application
+    platform: macOS
+    sources:
+      - path: CNERDMacUtilities
+    info:
+      path: Config/Info.plist
+      properties:
+        CFBundleDisplayName: CNERD Mac Utilities
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSApplicationCategoryType: public.app-category.utilities
+        LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
+        NSHumanReadableCopyright: "Copyright © 2026 CNERD AI. All rights reserved."
+        NSAppleEventsUsageDescription: "CNERD Mac Utilities asks Finder which files are selected so it can copy their paths, and changes Dock settings through System Events when you use the Dock switches."
+        NSDesktopFolderUsageDescription: "CNERD Mac Utilities lists the files on your Desktop in the Desktop Manager. It never moves, renames, or deletes them."
+    entitlements:
+      path: Config/CNERDMacUtilities.entitlements
+      properties:
+        com.apple.security.automation.apple-events: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ai.cnerd.MacUtilities
+        PRODUCT_NAME: CNERD Mac Utilities
+        PRODUCT_MODULE_NAME: CNERDMacUtilities
+        ENABLE_HARDENED_RUNTIME: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+
+  CNERDMacUtilitiesTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: CNERDMacUtilitiesTests
+    dependencies:
+      - target: CNERDMacUtilities
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ai.cnerd.MacUtilitiesTests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/CNERD Mac Utilities.app/Contents/MacOS/CNERD Mac Utilities"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+
+schemes:
+  CNERDMacUtilities:
+    build:
+      targets:
+        CNERDMacUtilities: all
+        CNERDMacUtilitiesTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - CNERDMacUtilitiesTests
+    archive:
+      config: Release
