@@ -193,17 +193,41 @@ struct NoticeRow: View {
 /// The app itself never handles payments.
 struct DonateMenu: View {
     var body: some View {
-        Menu {
-            ForEach(AppInfo.donationAmounts, id: \.self) { amount in
-                Button("$\(amount)") {
-                    NSWorkspace.shared.open(AppInfo.donateURL(amount: amount))
+        // The heart sits beside the menu, not inside its label. macOS draws a menu's own icon in
+        // the text color, so a heart inside the label would not stay red.
+        HStack(spacing: 4) {
+            DonateHeart()
+            Menu("Donate") {
+                ForEach(AppInfo.donationAmounts, id: \.self) { amount in
+                    Button("$\(amount)") {
+                        NSWorkspace.shared.open(AppInfo.donateURL(amount: amount))
+                    }
                 }
             }
-        } label: {
-            Label("Donate", systemImage: AppSymbol.donate)
+            .menuStyle(.borderlessButton)
+            .fixedSize()
         }
-        .menuStyle(.borderlessButton)
-        .fixedSize()
         .help("Support development. Opens the CNERD shop in your browser.")
+    }
+}
+
+/// The red heart shown beside Donate and beside the thank-you line.
+struct DonateHeart: View {
+    var body: some View {
+        Image(systemName: AppSymbol.donate)
+            .foregroundStyle(.red)
+            .accessibilityHidden(true)
+    }
+}
+
+/// Takes the place of the Donate button once the person turns on "I Have Donated".
+struct SupporterThanks: View {
+    var body: some View {
+        HStack(spacing: 4) {
+            DonateHeart()
+            Text("Thank you for your support")
+        }
+        .font(.caption)
+        .accessibilityElement(children: .combine)
     }
 }

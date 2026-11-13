@@ -83,7 +83,7 @@ struct GeneralSettingsView: View {
                 Text("CNERD Mac Utilities only asks for a permission when a feature needs it. It collects no data and makes no network connections.")
             }
 
-            Section("About") {
+            Section {
                 LabeledContent("Application", value: AppInfo.name)
                 LabeledContent("Version", value: AppInfo.versionDisplay)
                 LabeledContent("License", value: "Free and open source (MIT)")
@@ -94,10 +94,19 @@ struct GeneralSettingsView: View {
                 LabeledContent("Support Development") {
                     DonateMenu()
                 }
+                SettingToggle(
+                    title: "I Have Donated",
+                    description: "Swaps the Donate button in the sidebar and the menu bar for a thank-you. This is on the honor system. Nothing is checked or sent.",
+                    isOn: $settings.hasDonated
+                )
                 LabeledContent("Developed by") {
                     Link(AppInfo.developer, destination: AppInfo.websiteURL)
                         .help("Open the CNERD AI website")
                 }
+            } header: {
+                Text("About")
+            } footer: {
+                Text(AppInfo.trademarkNotice)
             }
         }
         .onAppear {

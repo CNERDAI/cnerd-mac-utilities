@@ -21,6 +21,8 @@ Why macOS 14: it is the oldest release with everything used here (the Observatio
 ## Distribution decisions
 
 - **Free and open source.** MIT license. No trial, no serial number, no account. Development is supported by optional donations through the CNERD shop.
+- **Nothing is locked behind a donation.** The CNERD AI name and the app logo always show. A lock in an open source app can be removed by anyone who builds it, so it would only get in the way of honest users.
+- **Names and logos are not part of the MIT license.** The license covers the source code. See `TRADEMARKS.md` for the CNERD AI names and logos, and for the names and logos that belong to others.
 - **No App Sandbox.** The Accessibility API cannot control other apps' windows from a sandboxed app. This rules out the Mac App Store. Downloads are signed with a Developer ID certificate and notarized by Apple.
 - **Hardened Runtime is on.** One entitlement is used: `com.apple.security.automation.apple-events` (needed to ask Finder for its selection and to change Dock settings through System Events).
 - **Signing for local builds.** The default is ad-hoc signing, which needs no developer account. With ad-hoc signing, macOS drops the Accessibility permission after every rebuild. A private `Config/Signing.local.xcconfig` with a real Apple Development certificate avoids that.
@@ -92,6 +94,8 @@ Note: macOS 15 and later also include built-in window tiling (drag to an edge, G
 | Permission status and links | Built | `AXIsProcessTrusted`, `AEDeterminePermissionToAutomateTarget`, System Settings links |
 | Menu bar icon | Built | SwiftUI `MenuBarExtra`. Can be turned off. |
 | Donate | Built | A menu of amounts ($5, $10, $20, $50, $100) at the bottom of the sidebar, in General Settings, and in the menu bar menu. Each opens the CNERD shop in the browser with the amount in the link. The app handles no payments. |
+| I Have Donated | Built | A switch in General Settings. It swaps the Donate button in the sidebar for a thank-you and removes the Donate menu from the menu bar menu. Honor system: nothing is checked and nothing is sent. Donate stays in General Settings. |
+| App logo and trademark notice | Built | The app logo shows above the CNERD AI link at the bottom of the sidebar. It is its own image (`AppLogo`), made from the icon artwork, because macOS adds a light plate around the app icon itself. The link opens cnerd.ai. The About section ends with a short trademark notice. |
 
 ### Module 004: Taskbar & Dock
 
@@ -159,6 +163,8 @@ Unit tests cover geometry, taskbar layout and ordering, shortcuts, sorting, sett
 - [ ] Dock switches: auto-hide, each position, size. The taskbar slides into or out of the Dock's space
 - [ ] Turn Off the macOS Dock, then turn it back on. Auto-hide returns to what it was
 - [ ] Donate menu: each amount opens the shop with that amount
+- [ ] I Have Donated on: the sidebar shows the thank-you and the menu bar menu has no Donate. Off: both come back
+- [ ] Sidebar: the app logo shows above CNERD AI, the heart is red, and CNERD AI opens cnerd.ai
 - [ ] Launch at Login on, log out, log in
 - [ ] Each module off: its controls are disabled and nothing reacts
 - [ ] Light and dark appearance

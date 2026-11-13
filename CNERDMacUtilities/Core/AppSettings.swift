@@ -17,6 +17,7 @@ final class AppSettings {
         case desktopEnabled = "desktop.enabled"
         case desktopSortOrder = "desktop.sortOrder"
         case showMenuBarIcon = "general.showMenuBarIcon"
+        case hasDonated = "general.hasDonated"
         case taskbarEnabled = "taskbar.enabled"
         case taskbarDisplayMode = "taskbar.displayMode"
         case taskbarShowAppNames = "taskbar.showAppNames"
@@ -74,6 +75,9 @@ final class AppSettings {
 
     // General
     var showMenuBarIcon: Bool { didSet { store(showMenuBarIcon, .showMenuBarIcon) } }
+    /// Turned on by the person to say they have donated. Honor system: nothing checks it and
+    /// nothing is sent. It only swaps the Donate button for a thank-you.
+    var hasDonated: Bool { didSet { store(hasDonated, .hasDonated) } }
 
     private let defaults: UserDefaults
 
@@ -126,6 +130,7 @@ final class AppSettings {
         taskbarAppOrder = defaults.stringArray(forKey: Key.taskbarAppOrder.rawValue) ?? []
         dockAutoHideBeforeOff = defaults.bool(forKey: Key.dockAutoHideBeforeOff.rawValue)
         showMenuBarIcon = defaults.bool(forKey: Key.showMenuBarIcon.rawValue)
+        hasDonated = defaults.bool(forKey: Key.hasDonated.rawValue)
     }
 
     /// Puts every shortcut back to its default.

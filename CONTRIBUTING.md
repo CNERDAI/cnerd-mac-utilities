@@ -36,4 +36,4 @@ All tests must pass with no compiler warnings. Add tests for new pure logic. For
 5. Add a screen in `Views/Settings/` and route to it in `MainWindowView.detail(for:)`.
 6. Run `xcodegen generate`.
 
-By contributing you agree that your work is released under the MIT license.
+By contributing you agree that your work is released under the MIT license. The CNERD AI and CNERD Mac Utilities names and logos are not part of that license. See [TRADEMARKS.md](TRADEMARKS.md).

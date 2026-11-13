@@ -33,9 +33,11 @@ struct MenuBarContent: View {
             NSApp.activate()
         }
 
-        Menu("Donate") {
-            ForEach(AppInfo.donationAmounts, id: \.self) { amount in
-                Button("$\(amount)") { NSWorkspace.shared.open(AppInfo.donateURL(amount: amount)) }
+        if !environment.settings.hasDonated {
+            Menu("Donate") {
+                ForEach(AppInfo.donationAmounts, id: \.self) { amount in
+                    Button("$\(amount)") { NSWorkspace.shared.open(AppInfo.donateURL(amount: amount)) }
+                }
             }
         }
 

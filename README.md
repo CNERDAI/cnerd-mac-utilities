@@ -117,8 +117,16 @@ Issues and pull requests are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING
 
 CNERD Mac Utilities is free. If you want to help pay for the time that goes into it, the **Donate** button at the bottom of the app's sidebar offers $5, $10, $20, $50, and $100, or use the [CNERD shop](https://cnerd.ai/shop/?app=mac-utilities). Thank you.
 
+After you donate, you can turn on **I Have Donated** in General Settings. It swaps the Donate button for a thank-you. It is on the honor system: nothing is checked, and nothing is locked either way.
+
 ## License
 
 [MIT](LICENSE). Copyright (c) 2026 CNERD AI.
 
-CNERD Mac Utilities is not affiliated with, endorsed by, or sponsored by Apple Inc. or Microsoft Corporation. Mac, macOS, Finder, and Dock are trademarks of Apple Inc. Windows is a trademark of Microsoft Corporation.
+## Names, logos, and trademarks
+
+The MIT license covers the source code. The CNERD AI and CNERD Mac Utilities names, logos, and app icon are trademarks of CNERD AI and are not part of that license. If you share a changed version, please give it your own name and icon.
+
+CNERD Mac Utilities is not affiliated with, endorsed by, or sponsored by Apple Inc. or Microsoft Corporation. Mac, macOS, Finder, and Dock are trademarks of Apple Inc. Windows is a trademark of Microsoft Corporation. All other names, logos, and app icons belong to their owners, and are mentioned with respect, only to describe what this app works with.
+
+The full note is in [TRADEMARKS.md](TRADEMARKS.md).

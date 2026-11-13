@@ -11,6 +11,7 @@
 		0955F85FF5FBD9CD76BF519F /* AppSymbol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253D2DDD1EB783E35D4C74B9 /* AppSymbol.swift */; };
 		0ADDCB849AD4AEBB28EB9343 /* AccessibilityWindowService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BE0012217EB9446A1A22D69 /* AccessibilityWindowService.swift */; };
 		127F1762F73B0D74D92B0FCA /* GeneralSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25819696621245BE6761785C /* GeneralSettingsView.swift */; };
+		158C761DDD0BFD2A7366239B /* SupportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CC8C9F6F9568E3E952EC99C /* SupportTests.swift */; };
 		21FAA220F55A513F608D4389 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC8C7EB549CAAF811343F2B /* DashboardView.swift */; };
 		280CF15967A7D0CA29EAB40A /* QuickFolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A668E2DB44D4441707B5AB6 /* QuickFolder.swift */; };
 		29A696951C3AF4F0F4D0A832 /* SidebarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F576A672D4C85F37849D5CD5 /* SidebarItem.swift */; };
@@ -84,6 +85,7 @@
 		7088B1211E9C397021F5C742 /* SettingsComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsComponents.swift; sourceTree = "<group>"; };
 		72139D9D27208280553DF6E7 /* TaskbarPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskbarPanel.swift; sourceTree = "<group>"; };
 		7A9A8AF5D467BF2C206E077B /* WindowFrameStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowFrameStore.swift; sourceTree = "<group>"; };
+		7CC8C9F6F9568E3E952EC99C /* SupportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportTests.swift; sourceTree = "<group>"; };
 		7D67757BE38CA4493143DF34 /* FinderController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderController.swift; sourceTree = "<group>"; };
 		8472B806FB0065E22E413673 /* TaskbarModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskbarModels.swift; sourceTree = "<group>"; };
 		94191225FD58D2AD780672D6 /* ModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelTests.swift; sourceTree = "<group>"; };
@@ -129,6 +131,7 @@
 			children = (
 				94191225FD58D2AD780672D6 /* ModelTests.swift */,
 				62A8B941233EE07B1A785925 /* ScreenGeometryTests.swift */,
+				7CC8C9F6F9568E3E952EC99C /* SupportTests.swift */,
 			);
 			path = CNERDMacUtilitiesTests;
 			sourceTree = "<group>";
@@ -420,6 +423,7 @@
 			files = (
 				B2412B3CBE43676DFCAB0376 /* ModelTests.swift in Sources */,
 				5CB8C5BE082B1EC4402D867C /* ScreenGeometryTests.swift in Sources */,
+				158C761DDD0BFD2A7366239B /* SupportTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

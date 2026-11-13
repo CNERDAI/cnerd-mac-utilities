@@ -32,6 +32,7 @@ struct MainWindowView: View {
 }
 
 struct SidebarView: View {
+    @Environment(AppEnvironment.self) private var environment
     @Binding var selection: SidebarItem?
 
     var body: some View {
@@ -52,13 +53,27 @@ struct SidebarView: View {
         .toolbar(removing: .sidebarToggle)
         .safeAreaInset(edge: .bottom, spacing: 0) {
             VStack(alignment: .leading, spacing: 1) {
+                // The app's logo, shown above the CNERD AI name. This is the artwork itself.
+                // The app icon from macOS comes with a light plate around it, which read as a border.
+                Image(AppInfo.logoAssetName)
+                    .resizable()
+                    .interpolation(.high)
+                    .frame(width: 44, height: 44)
+                    .padding(.bottom, 5)
+                    .accessibilityLabel(AppInfo.name)
                 Link(AppInfo.developer, destination: AppInfo.websiteURL)
                     .font(.caption.weight(.semibold))
                     .help("Open the CNERD AI website")
                 Text("Version \(AppInfo.version) · Free and open source")
                     .font(.caption)
-                DonateMenu()
-                    .padding(.top, 6)
+                Group {
+                    if environment.settings.hasDonated {
+                        SupporterThanks()
+                    } else {
+                        DonateMenu()
+                    }
+                }
+                .padding(.top, 6)
             }
             .foregroundStyle(.secondary)
             .frame(maxWidth: .infinity, alignment: .leading)
