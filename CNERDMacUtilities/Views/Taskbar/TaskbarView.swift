@@ -72,7 +72,15 @@ private struct TaskbarBar: View {
             of: content.isChosenApps ? [UTType.text] : [],
             delegate: ChosenDisplayDropDelegate(displayID: displayID, controller: controller)
         )
-        .modifier(BarSettingsMenu(isOn: !content.showsButtons, controller: controller))
+        // On a bar without its Applications button, a right-click on an empty part of the bar
+        // opens the settings, so they stay within reach. Other bars get no menu there.
+        .taskbarMenu(edge: position) {
+            guard !content.showsButtons else { return [] }
+            return [
+                .button("App Icon Controls…") { controller.openSettings(.appIcons) },
+                .button("Taskbar & Dock Settings…") { controller.openSettings(.taskbar) },
+            ]
+        }
         .background { background }
         .overlay { border }
     }
@@ -92,13 +100,15 @@ private struct TaskbarBar: View {
         .buttonStyle(.plain)
         .help("Click to open the Applications folder. Right-click for settings and to switch to the Apple Dock.")
         .accessibilityLabel("Applications")
-        .contextMenu {
-            Button("Taskbar & Dock Settings…") { controller.openSettings(.taskbar) }
-            Button("App Icon Controls…") { controller.openSettings(.appIcons) }
-            Divider()
-            // Hides the taskbar and brings the Dock back. The way back is in the menu bar icon's
-            // menu, the menu of this app's Dock icon, and the settings window.
-            Button(BarMode.taskbar.switchTitle) { controller.switchBar(to: .appleDock) }
+        .taskbarMenu(edge: position) {
+            [
+                .button("Taskbar & Dock Settings…") { controller.openSettings(.taskbar) },
+                .button("App Icon Controls…") { controller.openSettings(.appIcons) },
+                .divider,
+                // Hides the taskbar and brings the Dock back. The way back is in the menu bar icon's
+                // menu, the menu of this app's Dock icon, and the settings window.
+                .button(BarMode.taskbar.switchTitle) { controller.switchBar(to: .appleDock) },
+            ]
         }
     }
 
@@ -123,27 +133,28 @@ private struct TaskbarBar: View {
         .buttonStyle(.plain)
         .help("Click to open the Trash. Right-click to empty it or eject a disk.")
         .accessibilityLabel("Trash")
-        .contextMenu {
+        .taskbarMenu(edge: position) {
             trashMenu
         }
     }
 
     /// Mirrors what the Dock's Trash offers: open, empty, and eject.
-    @ViewBuilder
-    private var trashMenu: some View {
-        Button("Open") { controller.openTrash() }
-        Button("Empty Trash…") { controller.emptyTrash() }
-
+    private var trashMenu: [TaskbarMenuItem] {
+        var items: [TaskbarMenuItem] = [
+            .button("Open") { controller.openTrash() },
+            .button("Empty Trash…") { controller.emptyTrash() },
+        ]
         let volumes = controller.ejectableVolumes
         if !volumes.isEmpty {
-            Divider()
-            ForEach(volumes) { volume in
-                Button("Eject \(volume.name)") { controller.eject(volume) }
+            items.append(.divider)
+            for volume in volumes {
+                items.append(.button("Eject \(volume.name)") { controller.eject(volume) })
             }
             if volumes.count > 1 {
-                Button("Eject All") { controller.ejectAll() }
+                items.append(.button("Eject All") { controller.ejectAll() })
             }
         }
+        return items
     }
 
     /// The line between the parts of the bar, and between groups. It scales with the icons.
@@ -186,6 +197,7 @@ private struct TaskbarBar: View {
                             isHorizontalBar: isHorizontal,
                             groups: groups,
                             chosenDisplay: content.isChosenApps ? displayID : nil,
+                            menuEdge: position,
                             controller: controller
                         )
                     }
@@ -252,6 +264,8 @@ private struct TaskbarAppCell: View {
     /// Set when the cell is on a display that shows only its chosen apps. Dragging then reorders
     /// that display's own list, and the menu can take the app off that display.
     var chosenDisplay: UInt32?
+    /// The edge of the taskbar this cell is on, so its menu opens beside the bar. Nil in a pop-up.
+    var menuEdge: TaskbarPosition?
     let controller: TaskbarController
 
     /// Measured size of this cell, used to tell which half the pointer is over during a drag.
@@ -308,75 +322,64 @@ private struct TaskbarAppCell: View {
             .accessibilityAction {
                 controller.activate(app)
             }
-            .contextMenu {
+            .taskbarMenu(edge: menuEdge) {
                 menu
             }
     }
 
     /// Mirrors the Dock's right-click menu.
-    @ViewBuilder
-    private var menu: some View {
+    private var menu: [TaskbarMenuItem] {
+        var items: [TaskbarMenuItem] = []
         if app.isRunning {
-            Button("Show All Windows") { controller.showAllWindows(of: app) }
-            Button("Hide") { controller.hide(app) }
+            items.append(.button("Show All Windows") { controller.showAllWindows(of: app) })
+            items.append(.button("Hide") { controller.hide(app) })
         } else {
-            Button("Open") { controller.activate(app) }
+            items.append(.button("Open") { controller.activate(app) })
         }
-
-        Divider()
+        items.append(.divider)
 
         if app.canBePinned {
             if app.isRunning {
-                Toggle("Keep in Taskbar", isOn: Binding(
-                    get: { app.isPinned },
-                    set: { controller.setPinned($0, app: app) }
-                ))
+                items.append(.toggle("Keep in Taskbar", isOn: app.isPinned) { controller.setPinned($0, app: app) })
             } else if app.isPinned {
-                Button("Remove from Taskbar") { controller.setPinned(false, app: app) }
+                items.append(.button("Remove from Taskbar") { controller.setPinned(false, app: app) })
             }
         }
         if let chosenDisplay, let display = controller.displays.first(where: { $0.id == chosenDisplay }) {
-            Button("Remove from This Display") { controller.setChosen(false, appID: app.id, on: display) }
+            items.append(.button("Remove from This Display") { controller.setChosen(false, appID: app.id, on: display) })
         }
         if app.canBePinned {
             // Displays set to Only Apps I Choose. A check mark means the app shows there.
-            let chosenDisplays = controller.chosenDisplays
-            if !chosenDisplays.isEmpty {
-                Menu("Show on Display") {
-                    ForEach(chosenDisplays) { display in
-                        Toggle(display.name, isOn: Binding(
-                            get: { controller.isChosen(app.id, on: display) },
-                            set: { controller.setChosen($0, appID: app.id, on: display) }
-                        ))
+            let displays = controller.chosenDisplays
+            if !displays.isEmpty {
+                items.append(.submenu("Show on Display", displays.map { display in
+                    .toggle(display.name, isOn: controller.isChosen(app.id, on: display)) {
+                        controller.setChosen($0, appID: app.id, on: display)
                     }
-                }
+                }))
             }
-        }
-        if app.canBePinned {
             // Moves the app behind the Hidden Apps button, or brings it back. The app keeps running.
             if controller.isHiddenFromTaskbar(app.id) {
-                Button("Show in Taskbar") { controller.setHiddenFromTaskbar(false, appID: app.id) }
+                items.append(.button("Show in Taskbar") { controller.setHiddenFromTaskbar(false, appID: app.id) })
             } else {
-                Button("Hide from Taskbar") { controller.setHiddenFromTaskbar(true, appID: app.id) }
+                items.append(.button("Hide from Taskbar") { controller.setHiddenFromTaskbar(true, appID: app.id) })
             }
-        }
-        if app.canBePinned, !groups.isEmpty {
-            Menu("Move to Group") {
-                ForEach(groups) { group in
-                    Button(group.name.isEmpty ? "Untitled Group" : group.name) {
+            if !groups.isEmpty {
+                items.append(.submenu("Move to Group", groups.map { group in
+                    .button(group.name.isEmpty ? "Untitled Group" : group.name) {
                         controller.moveApp(app.id, toGroup: group.id)
                     }
-                }
+                }))
             }
         }
         if app.bundleURL != nil {
-            Button("Show in Finder") { controller.showInFinder(app) }
+            items.append(.button("Show in Finder") { controller.showInFinder(app) })
         }
-
         if app.isRunning {
-            Divider()
-            Button("Quit") { controller.quit(app) }
+            items.append(.divider)
+            items.append(.button("Quit") { controller.quit(app) })
         }
+        return items
     }
 
     @ViewBuilder
@@ -478,24 +481,6 @@ private struct TaskbarReorderDelegate: DropDelegate {
     }
 }
 
-/// A right-click menu for the empty part of a taskbar that has no Applications button, so its
-/// settings stay within reach. Other taskbars get no menu there.
-private struct BarSettingsMenu: ViewModifier {
-    let isOn: Bool
-    let controller: TaskbarController
-
-    func body(content: Content) -> some View {
-        if isOn {
-            content.contextMenu {
-                Button("App Icon Controls…") { controller.openSettings(.appIcons) }
-                Button("Taskbar & Dock Settings…") { controller.openSettings(.taskbar) }
-            }
-        } else {
-            content
-        }
-    }
-}
-
 /// Handles a drop on the empty part of a taskbar that shows only its chosen apps: the dragged app
 /// joins that display's apps. Nothing changes until the app is let go.
 private struct ChosenDisplayDropDelegate: DropDelegate {
@@ -556,13 +541,15 @@ private struct HiddenAppsButton: View {
         .help("Hidden apps. Click to show them. Drop an app here to hide it.")
         .accessibilityLabel("Hidden apps")
         .accessibilityValue(running == 1 ? "1 running" : "\(running) running")
-        .contextMenu {
-            Button(controller.isHiddenAppsShown ? "Close Hidden Apps" : "Show Hidden Apps") {
-                controller.togglePopup(.hiddenApps, anchor: anchor.screenFrame)
-            }
-            Button("Show All in Taskbar") { controller.showAllHiddenApps() }
-            Divider()
-            Button("App Icon Controls…") { controller.openSettings(.appIcons) }
+        .taskbarMenu(edge: controller.settings.taskbarPosition) {
+            [
+                .button(controller.isHiddenAppsShown ? "Close Hidden Apps" : "Show Hidden Apps") {
+                    controller.togglePopup(.hiddenApps, anchor: anchor.screenFrame)
+                },
+                .button("Show All in Taskbar") { controller.showAllHiddenApps() },
+                .divider,
+                .button("App Icon Controls…") { controller.openSettings(.appIcons) },
+            ]
         }
     }
 }
@@ -636,12 +623,14 @@ private struct MoreAppsButton: View {
         .help(apps.count == 1 ? "1 more app. Click to show it." : "\(apps.count) more apps. Click to show them.")
         .accessibilityLabel("More apps")
         .accessibilityValue(apps.count == 1 ? "1 app" : "\(apps.count) apps")
-        .contextMenu {
-            Button(isOpen ? "Close More Apps" : "Show More Apps") {
-                controller.togglePopup(popup, anchor: anchor.screenFrame)
-            }
-            Divider()
-            Button("Taskbar & Dock Settings…") { controller.openSettings(.taskbar) }
+        .taskbarMenu(edge: controller.settings.taskbarPosition) {
+            [
+                .button(controller.shownPopup == popup ? "Close More Apps" : "Show More Apps") {
+                    controller.togglePopup(popup, anchor: anchor.screenFrame)
+                },
+                .divider,
+                .button("Taskbar & Dock Settings…") { controller.openSettings(.taskbar) },
+            ]
         }
     }
 }

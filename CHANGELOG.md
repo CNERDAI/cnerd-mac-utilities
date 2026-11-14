@@ -19,6 +19,7 @@ and is changed with `./version.sh`. See "Versions and releases" in the README.
 
 ### Fixed
 
+- Right-click menus on a display above the main display flashed and closed. macOS was moving the menu off the screen. The taskbar now shows its own menus, just beside the bar, on every display.
 - This app's icon no longer shows a light border on the taskbar.
 - Switches in the settings keep their color while the window is in the background.
 

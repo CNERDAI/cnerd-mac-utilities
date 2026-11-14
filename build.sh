@@ -6,6 +6,8 @@
 # build is running. Running the tests does not change it.
 cd "$(dirname "$0")" || exit 1
 ACTION="${1:-build}"
+VERSION_FILE="Config/Version.xcconfig"
+BEFORE="$(cat "$VERSION_FILE")"
 if [ "$ACTION" = "build" ]; then
   ./version.sh build > /dev/null || { echo "EXIT:version-failed" > "$ACTION.log"; exit 1; }
 fi
@@ -13,4 +15,7 @@ XCODEGEN="$(command -v xcodegen || echo /opt/homebrew/bin/xcodegen)"
 "$XCODEGEN" generate > xcodegen.log 2>&1 || { echo "EXIT:xcodegen-failed" >> xcodegen.log; exit 1; }
 xcodebuild -project CNERDMacUtilities.xcodeproj -scheme CNERDMacUtilities -configuration Debug \
   -derivedDataPath build -destination 'platform=macOS,arch=arm64' "$ACTION" > "$ACTION.log" 2>&1
-echo "EXIT:$?" >> "$ACTION.log"
+STATUS=$?
+# A build that failed made no app, so it does not use up a build number.
+if [ "$STATUS" -ne 0 ] && [ "$ACTION" = "build" ]; then printf '%s\n' "$BEFORE" > "$VERSION_FILE"; fi
+echo "EXIT:$STATUS" >> "$ACTION.log"

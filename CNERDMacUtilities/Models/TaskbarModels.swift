@@ -399,6 +399,21 @@ enum TaskbarLayout {
         return canvas.insetBy(dx: canvas.width * inset, dy: canvas.height * inset)
     }
 
+    /// Gap between the taskbar and a right-click menu that opens beside it.
+    static let menuGap: CGFloat = 4
+
+    /// Where the top left corner of a right-click menu goes so the menu sits beside the taskbar
+    /// and not on top of it. Screen coordinates, with y growing upward. `click` is the pointer,
+    /// `bar` is the taskbar's frame.
+    static func menuTopLeft(click: CGPoint, bar: CGRect, menuSize: CGSize, position: TaskbarPosition) -> CGPoint {
+        switch position {
+        case .bottom: CGPoint(x: click.x, y: bar.maxY + menuGap + menuSize.height)
+        case .top: CGPoint(x: click.x, y: bar.minY - menuGap)
+        case .left: CGPoint(x: bar.maxX + menuGap, y: click.y)
+        case .right: CGPoint(x: bar.minX - menuGap - menuSize.width, y: click.y)
+        }
+    }
+
     /// Gap between a rounded taskbar and the screen edge.
     static let floatingMargin: CGFloat = 6
     static let roundedCornerRadius: CGFloat = 14
