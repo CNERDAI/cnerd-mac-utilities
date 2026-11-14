@@ -11,7 +11,22 @@ Native Swift, no dependencies, no account, no data collection. Developed by [CNE
 
 If it saves you time, you can [support development with a donation](https://cnerd.ai/shop/?app=mac-utilities).
 
-## Features
+## The quick 10
+
+1. **A Windows-style taskbar on every display.** Bottom, top, left, or right.
+2. **Each screen can show its own apps.** By where the window is, or only the apps you choose.
+3. **Maximize that restores.** Fills the screen without Full Screen. Do it again to go back.
+4. **Snap with the keyboard.** Left half, right half, or center, from any app.
+5. **Keep in Taskbar.** Apps stay put, and you drag them into the order you want.
+6. **App groups.** Sorted by topic, or into groups you make.
+7. **Auto-fit.** Too many apps? Names hide, icons shrink, and the rest go behind a "+N" button.
+8. **Hidden apps.** Tuck running apps behind one button that shows how many are running.
+9. **One switch back to the Apple Dock.** And one switch to return to the taskbar.
+10. **Finder tools.** Show hidden files and copy a file's full path.
+
+The full list is next.
+
+## All features
 
 Every module has its own on and off switch. When a module is off it does nothing.
 
