@@ -1,5 +1,11 @@
 # CNERD Mac Utilities
 
+<p align="center">
+  <img src="docs/images/readme-banner.png" width="100%" alt="CNERD Mac Utilities. Switch computers. Not habits. A Windows-style taskbar on every display, maximize that restores, and snap left and right, built natively for macOS. Free and open source.">
+</p>
+
+**Switch computers. Not habits.** If you work on Windows and on a Mac, you pay for it every time you change desks: no taskbar, a green button that goes Full Screen, and a Dock that lives on one screen at a time. CNERD Mac Utilities puts those Windows habits back, on every display you plug in.
+
 Free, open source utilities that make a Mac feel familiar to people who come from Windows.
 Native Swift, no dependencies, no account, no data collection. Developed by [CNERD AI](https://cnerd.ai).
 
@@ -120,7 +126,7 @@ CNERDMacUtilities/
   Views/                        SwiftUI screens, one per module, plus shared components
   Resources/                    Asset catalog, including the app icon
 CNERDMacUtilitiesTests/         Unit tests
-docs/                           FEASIBILITY.md and ARCHITECTURE.md
+docs/                           FEASIBILITY.md, ARCHITECTURE.md, and images for this page
 CHANGELOG.md                    What changed in each release
 version.sh                      Shows or raises the version
 Artwork/                        Icon source artwork
