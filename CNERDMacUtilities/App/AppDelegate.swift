@@ -7,6 +7,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         false
     }
 
+    /// If this app turned the macOS Dock off, the Dock comes back when the app quits.
+    /// Without this, quitting would leave the Mac with no Dock and no taskbar.
+    func applicationWillTerminate(_ notification: Notification) {
+        AppEnvironment.current?.taskbar.restoreDockForQuit()
+    }
+
     /// Adds the bar switch to the menu of the app's own Dock icon. While the Apple Dock is in use
     /// the taskbar is gone, so this is one of the ways to bring it back.
     func applicationDockMenu(_ sender: NSApplication) -> NSMenu? {

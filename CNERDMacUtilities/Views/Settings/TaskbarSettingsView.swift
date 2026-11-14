@@ -82,7 +82,7 @@ struct TaskbarSettingsView: View {
                     Text(position.title).tag(position)
                 }
             } label: {
-                SettingLabel(title: "Position", description: "Which edge of the screen the taskbar uses. This is separate from the Dock's position.")
+                SettingLabel(title: "Position", description: "Which edge of the screen the taskbar uses. This is separate from the Dock's position. You can also press and hold an empty part of the taskbar and drag it to another edge.")
             }
 
             Picker(selection: $settings.taskbarCornerStyle) {
@@ -160,7 +160,7 @@ struct TaskbarSettingsView: View {
         } header: {
             Text("Apps on the Taskbar")
         } footer: {
-            Text("When the apps do not fit on a taskbar, their names are hidden first and then the icons get smaller. Apps that still do not fit go behind a More button at the end of the apps. Drag an app along the taskbar to move it. The order is saved. Right-click an app for Keep in Taskbar, Show All Windows, Show in Finder, Hide, and Quit. Groups and the order of apps are in App Icon Controls. Right-click the Applications button at the start of the taskbar to come back to this screen.")
+            Text("When the apps do not fit on a taskbar, their names are hidden first and then the icons get smaller. Apps that still do not fit go behind a More button at the end of the apps. Drag an app along the taskbar to move it. The order is saved. Right-click an app for Keep in Taskbar, Show All Windows, Show in Finder, Hide, and Quit. Groups and the order of apps are in App Icon Controls. Right-click an empty part of the taskbar, or the Applications button at its start, for Add Icons, Position on Screen, and the way back to this screen.")
         }
         .disabled(!settings.taskbarEnabled)
     }

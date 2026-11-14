@@ -7,6 +7,8 @@ enum TaskbarMenuItem {
     /// A line with a check mark. The action gets the new state.
     case toggle(String, isOn: Bool, action: @MainActor (Bool) -> Void)
     case submenu(String, [TaskbarMenuItem])
+    /// A gray line that cannot be chosen. It only says something.
+    case note(String)
     case divider
 }
 
@@ -36,6 +38,10 @@ enum TaskbarMenuBuilder {
                 guard submenu.numberOfItems > 0 else { continue }
                 let line = NSMenuItem(title: title, action: nil, keyEquivalent: "")
                 line.submenu = submenu
+                menu.addItem(line)
+            case .note(let title):
+                let line = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+                line.isEnabled = false
                 menu.addItem(line)
             case .divider:
                 // No divider at the top, and never two in a row.
@@ -80,6 +86,9 @@ final class TaskbarMenuRegistry {
         /// The edge the taskbar is on, so the menu opens beside the bar. Nil inside a pop-up,
         /// where the menu opens at the pointer.
         var edge: TaskbarPosition?
+        /// True for the bar itself, the region behind every button and app. A point that is on
+        /// the bar and on nothing smaller is on the empty part of the bar.
+        var isBar = false
         var items: @MainActor () -> [TaskbarMenuItem]
     }
 
@@ -88,14 +97,20 @@ final class TaskbarMenuRegistry {
 
     @ObservationIgnored private var regions: [UUID: Region] = [:]
 
-    func set(_ id: UUID, frame: CGRect, edge: TaskbarPosition?, items: @escaping @MainActor () -> [TaskbarMenuItem]) {
-        regions[id] = Region(frame: frame, edge: edge, items: items)
+    func set(
+        _ id: UUID, frame: CGRect, edge: TaskbarPosition?, isBar: Bool = false,
+        items: @escaping @MainActor () -> [TaskbarMenuItem]
+    ) {
+        regions[id] = Region(frame: frame, edge: edge, isBar: isBar, items: items)
     }
 
     /// Keeps the menu of a region current when its view is drawn again without moving.
-    func refresh(_ id: UUID, edge: TaskbarPosition?, items: @escaping @MainActor () -> [TaskbarMenuItem]) {
+    func refresh(
+        _ id: UUID, edge: TaskbarPosition?, isBar: Bool = false,
+        items: @escaping @MainActor () -> [TaskbarMenuItem]
+    ) {
         guard let frame = regions[id]?.frame else { return }
-        regions[id] = Region(frame: frame, edge: edge, items: items)
+        regions[id] = Region(frame: frame, edge: edge, isBar: isBar, items: items)
     }
 
     func remove(_ id: UUID) {
@@ -108,11 +123,18 @@ final class TaskbarMenuRegistry {
             .filter { $0.frame.contains(point) }
             .sorted { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height }
     }
+
+    /// True when the point is on the bar and on nothing smaller: not on a button and not on an app.
+    /// That part of the bar can be dragged to move the taskbar to another edge.
+    func isEmptyBar(at point: CGPoint) -> Bool {
+        regions(at: point).first?.isBar == true
+    }
 }
 
 /// Reports where a view is to the taskbar window's `TaskbarMenuRegistry`, with its menu.
 private struct TaskbarMenuModifier: ViewModifier {
     let edge: TaskbarPosition?
+    let isBar: Bool
     let items: @MainActor () -> [TaskbarMenuItem]
 
     @Environment(TaskbarMenuRegistry.self) private var registry: TaskbarMenuRegistry?
@@ -123,11 +145,11 @@ private struct TaskbarMenuModifier: ViewModifier {
             GeometryReader { proxy in
                 let frame = proxy.frame(in: .named(TaskbarMenuRegistry.space))
                 // The view may be drawn again with new values and the same frame.
-                let _ = registry?.refresh(id, edge: edge, items: items)
+                let _ = registry?.refresh(id, edge: edge, isBar: isBar, items: items)
                 Color.clear
-                    .onAppear { registry?.set(id, frame: frame, edge: edge, items: items) }
+                    .onAppear { registry?.set(id, frame: frame, edge: edge, isBar: isBar, items: items) }
                     .onChange(of: frame) { _, newFrame in
-                        registry?.set(id, frame: newFrame, edge: edge, items: items)
+                        registry?.set(id, frame: newFrame, edge: edge, isBar: isBar, items: items)
                     }
                     .onDisappear { registry?.remove(id) }
             }
@@ -137,8 +159,11 @@ private struct TaskbarMenuModifier: ViewModifier {
 
 extension View {
     /// Gives this part of a taskbar a right-click menu. Put it last, so it covers the whole view.
-    /// The items are worked out when the menu opens.
-    func taskbarMenu(edge: TaskbarPosition?, items: @escaping @MainActor () -> [TaskbarMenuItem]) -> some View {
-        modifier(TaskbarMenuModifier(edge: edge, items: items))
+    /// The items are worked out when the menu opens. `isBar` marks the bar itself, whose empty
+    /// part can also be dragged to another edge of the screen.
+    func taskbarMenu(
+        edge: TaskbarPosition?, isBar: Bool = false, items: @escaping @MainActor () -> [TaskbarMenuItem]
+    ) -> some View {
+        modifier(TaskbarMenuModifier(edge: edge, isBar: isBar, items: items))
     }
 }

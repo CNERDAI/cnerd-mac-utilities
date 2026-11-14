@@ -1,5 +1,6 @@
 import AppKit
 import Observation
+import UniformTypeIdentifiers
 
 /// Module 004. A Windows-style taskbar drawn by this app on the chosen displays,
 /// plus switches for the real macOS Dock.
@@ -66,6 +67,10 @@ final class TaskbarController: UtilityModule {
     @ObservationIgnored private var nameWidthCache: [String: CGFloat] = [:]
 
     @ObservationIgnored private var panels: [UInt32: TaskbarPanel] = [:]
+    /// A drag of a taskbar toward another edge of the screen, while it is under way.
+    @ObservationIgnored private var barDrag: BarDrag?
+    /// The outline that shows where the dragged taskbar will land.
+    @ObservationIgnored private var barDragPreview: TaskbarDragPreview?
     @ObservationIgnored private var dockFollowUp: Task<Void, Never>?
     /// Name, icon, and location of kept apps that are not running.
     @ObservationIgnored private var installedAppCache: [String: (url: URL, name: String, icon: NSImage)] = [:]
@@ -132,6 +137,7 @@ final class TaskbarController: UtilityModule {
         Task { @MainActor [weak self] in
             self?.refresh()
             self?.refreshVolumes()
+            self?.turnDockOffAgainAfterLaunch()
         }
     }
 
@@ -141,9 +147,12 @@ final class TaskbarController: UtilityModule {
     }
 
     /// How thick the bar is: its height on the top or bottom edge, its width on the left or right edge.
-    var thickness: CGFloat {
+    var thickness: CGFloat { thickness(at: settings.taskbarPosition) }
+
+    /// How thick the bar would be on a given edge. A side bar with names beside the icons is wider.
+    func thickness(at position: TaskbarPosition) -> CGFloat {
         TaskbarLayout.thickness(
-            position: settings.taskbarPosition,
+            position: position,
             iconSize: CGFloat(settings.taskbarIconPoints),
             showNames: settings.taskbarShowAppNames,
             namePosition: settings.taskbarNamePosition,
@@ -159,6 +168,7 @@ final class TaskbarController: UtilityModule {
     func refresh() {
         guard settings.taskbarEnabled else {
             closePopup()
+            endBarDrag()
             removePanels(keeping: [])
             if !barDisplays.isEmpty { barDisplays = [] }
             if !barLengths.isEmpty { barLengths = [:] }
@@ -210,6 +220,10 @@ final class TaskbarController: UtilityModule {
                 if !panel.isVisible { panel.orderFrontRegardless() }
             } else {
                 let panel = TaskbarPanel(rootView: TaskbarView(controller: self, displayID: id))
+                panel.onBarDrag = { [weak self, weak panel] phase in
+                    guard let panel else { return }
+                    self?.handleBarDrag(phase, from: panel)
+                }
                 panel.setFrame(frame, display: true)
                 panel.orderFrontRegardless()
                 panels[id] = panel
@@ -242,6 +256,7 @@ final class TaskbarController: UtilityModule {
 
     private func removePanels(keeping ids: Set<UInt32>) {
         for id in Array(panels.keys) where !ids.contains(id) {
+            panels[id]?.cancelBarDrag()
             panels[id]?.orderOut(nil)
             panels[id] = nil
         }
@@ -259,6 +274,67 @@ final class TaskbarController: UtilityModule {
               let text = CFUUIDCreateString(nil, uuid) as String?
         else { return "display:\(id)" }
         return text
+    }
+
+    // MARK: - Moving the bar to another edge
+
+    private struct BarDrag {
+        /// The edge the bar lands on if the button is let go now.
+        var target: TaskbarPosition
+        /// The display the dragged bar is on, and the part of it that is free for the bar.
+        let screen: NSRect
+        let usable: NSRect
+        /// Where the dragged bar is now. A drag that stays on it does not move it.
+        let bar: NSRect
+    }
+
+    /// Moves every taskbar to an edge of its display.
+    func setPosition(_ position: TaskbarPosition) {
+        if settings.taskbarPosition != position { settings.taskbarPosition = position }
+    }
+
+    /// Follows a drag of the empty part of a taskbar. While the pointer moves, an outline shows
+    /// the edge the taskbar would land on. Letting go moves the taskbar there. The position is
+    /// one setting for all displays, so every taskbar moves with it.
+    private func handleBarDrag(_ phase: TaskbarPanel.BarDragPhase, from panel: TaskbarPanel) {
+        switch phase {
+        case .moved(let point):
+            guard settings.taskbarEnabled else { return }
+            if barDrag == nil {
+                guard let screen = panel.screen ?? NSScreen.main else { return }
+                closePopup()
+                // Read once per drag. The Dock does not change while the button is held down.
+                barDrag = BarDrag(
+                    target: settings.taskbarPosition,
+                    screen: screen.frame,
+                    usable: screen.usableFrame(dockIsHidden: DockInfo.isAutoHidden),
+                    bar: panel.frame
+                )
+            }
+            guard var drag = barDrag else { return }
+            drag.target = TaskbarLayout.dragTarget(
+                for: point, bar: drag.bar, home: settings.taskbarPosition, screen: drag.screen, current: drag.target
+            )
+            barDrag = drag
+            let frame = TaskbarLayout.frame(
+                in: drag.usable, position: drag.target, thickness: thickness(at: drag.target), floating: isFloating
+            )
+            if barDragPreview == nil { barDragPreview = TaskbarDragPreview() }
+            barDragPreview?.show(frame: frame, cornerRadius: isFloating ? TaskbarLayout.roundedCornerRadius : 0)
+        case .ended:
+            // The bar lands where the outline last showed, so what was seen is what happens.
+            let target = barDrag?.target
+            endBarDrag()
+            if let target { setPosition(target) }
+        case .cancelled:
+            endBarDrag()
+        }
+    }
+
+    private func endBarDrag() {
+        barDragPreview?.orderOut(nil)
+        barDragPreview = nil
+        barDrag = nil
     }
 
     // MARK: - App list
@@ -638,6 +714,116 @@ final class TaskbarController: UtilityModule {
         }
         setGroups(groups)
         if pinned != settings.taskbarPinnedApps { settings.taskbarPinnedApps = pinned }
+    }
+
+    /// Add Icons in the taskbar's right-click menu. The person picks apps in a file chooser and
+    /// they stay on the taskbar, running or not. On a display that shows only its chosen apps,
+    /// they join that display's apps.
+    func chooseAppsToAdd(on displayID: UInt32) {
+        closePopup()
+        // Wait a turn, so the right-click menu has closed before the file chooser opens.
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            let chosenDisplay = self.displays.first { $0.id == displayID && self.showsChosenApps(on: $0.id) }
+            let panel = NSOpenPanel()
+            panel.title = chosenDisplay.map { "Add Icons to the \($0.name) Taskbar" } ?? "Add Icons to the Taskbar"
+            panel.message = "Choose the apps to keep on the taskbar."
+            panel.prompt = "Add"
+            panel.allowedContentTypes = [.applicationBundle]
+            panel.allowsMultipleSelection = true
+            panel.canChooseDirectories = false
+            panel.directoryURL = URL(fileURLWithPath: "/Applications", isDirectory: true)
+            // The taskbar never takes the keyboard, so bring this app forward for the chooser.
+            NSApp.activate()
+            guard panel.runModal() == .OK else { return }
+            if let chosenDisplay {
+                self.addChosenApps(at: panel.urls, to: chosenDisplay)
+            } else {
+                self.addApps(at: panel.urls, toGroup: nil)
+            }
+        }
+    }
+
+    // MARK: - Apps from the Apple Dock and from Finder
+
+    /// The apps kept in the macOS Dock that this display's taskbar does not keep yet, in the
+    /// Dock's order. Apps that are no longer installed are left out.
+    func appleDockAppsToAdd(on displayID: UInt32) -> [DockApp] {
+        let kept = Set(keptAppIDs(on: displayID))
+        return DockInfo.keptApps.filter { app in
+            !kept.contains(app.bundleID) && installedApp(for: app.bundleID) != nil
+        }
+    }
+
+    /// The apps this display's taskbar keeps whether they are running or not.
+    private func keptAppIDs(on displayID: UInt32) -> [String] {
+        if showsChosenApps(on: displayID) { return rule(for: displayID)?.appIDs ?? [] }
+        return settings.taskbarPinnedApps
+    }
+
+    /// Keeps apps on the taskbar by bundle identifier. On a display that shows only its chosen
+    /// apps, they join that display's apps. Used by Add from Apple Dock.
+    func addApps(withIDs ids: [String], on displayID: UInt32) {
+        let ids = ids.filter { !$0.hasPrefix("pid:") }
+        guard !ids.isEmpty else { return }
+        if let display = displays.first(where: { $0.id == displayID }), showsChosenApps(on: displayID) {
+            setDisplayRules(TaskbarDisplayRules.adding(ids, to: display.key, name: display.name, in: settings.taskbarDisplayRules))
+            return
+        }
+        var pinned = settings.taskbarPinnedApps
+        for id in ids where !pinned.contains(id) { pinned.append(id) }
+        if pinned != settings.taskbarPinnedApps { settings.taskbarPinnedApps = pinned }
+    }
+
+    /// The apps among dropped files, with their bundle identifiers. Anything that is not an app
+    /// is left out, and an app dropped twice counts once.
+    static func droppedApps(_ urls: [URL], bundleID: (URL) -> String? = { Bundle(url: $0)?.bundleIdentifier }) -> [String] {
+        var seen = Set<String>()
+        return urls.compactMap { url in
+            guard url.isFileURL, url.pathExtension.lowercased() == "app",
+                  let id = bundleID(url), !id.isEmpty, seen.insert(id).inserted
+            else { return nil }
+            return id
+        }
+    }
+
+    /// Adds apps dropped on a taskbar as files, for example dragged from the Applications folder
+    /// in Finder. With a target, they land right before or after that app. Without one, they go
+    /// to the end. Returns how many apps were in the drop.
+    @discardableResult
+    func addDroppedApps(at urls: [URL], on displayID: UInt32, beside target: (id: String, before: Bool)? = nil) -> Int {
+        let ids = Self.droppedApps(urls)
+        guard !ids.isEmpty else { return 0 }
+        // Placed one at a time next to the target. Going backward for "after" keeps their order.
+        let placingOrder = target?.before == false ? Array(ids.reversed()) : ids
+
+        if let display = displays.first(where: { $0.id == displayID }), showsChosenApps(on: displayID) {
+            var rules = TaskbarDisplayRules.adding(ids, to: display.key, name: display.name, in: settings.taskbarDisplayRules)
+            if let target {
+                for id in placingOrder {
+                    rules = TaskbarDisplayRules.placing(
+                        id, before: target.before, target: target.id, on: display.key, name: display.name, in: rules
+                    )
+                }
+            }
+            setDisplayRules(rules)
+            return ids.count
+        }
+
+        addApps(withIDs: ids, on: displayID)
+        // Gives each new app its place in the order, and its group when grouping is on.
+        reloadApps()
+        for id in placingOrder {
+            if let target {
+                draggedAppID = id
+                placeDraggedApp(before: target.before, targetID: target.id)
+            } else {
+                // An app the person had tucked away comes back when they drop it on the bar.
+                setHiddenFromTaskbar(false, appID: id)
+            }
+        }
+        draggedAppID = nil
+        return ids.count
     }
 
     // MARK: - Apps chosen per display
@@ -1259,6 +1445,25 @@ final class TaskbarController: UtilityModule {
         }
         refreshDockState()
         followDockChange(afterMilliseconds: [1000, 1500, 2000])
+    }
+
+    /// Called as the app quits. A Dock that this app turned off comes back, so the Mac is never
+    /// left with no Dock and no taskbar. The next launch turns it off again.
+    func restoreDockForQuit() {
+        guard !AppInfo.isRunningTests else { return }
+        refreshDockState()
+        guard isDockTurnedOff else { return }
+        settings.dockOffAgainAtLaunch = true
+        setDockTurnedOff(false)
+    }
+
+    /// The other half of `restoreDockForQuit`: the Dock was off when the app last quit, so it
+    /// goes off again now that the app is back.
+    private func turnDockOffAgainAfterLaunch() {
+        guard !AppInfo.isRunningTests, settings.dockOffAgainAtLaunch else { return }
+        settings.dockOffAgainAtLaunch = false
+        refreshDockState()
+        if !isDockTurnedOff { setDockTurnedOff(true) }
     }
 
     /// Changes a Dock setting through System Events, Apple's scripting interface for system preferences.

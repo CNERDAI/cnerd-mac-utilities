@@ -42,6 +42,13 @@ enum AppInfo {
     }
 
     static var versionDisplay: String { "\(version) (\(build))" }
+
+    /// True while the app is only the host of its unit tests. Changes to the real Dock are skipped then.
+    static let isRunningTests: Bool = {
+        let environment = ProcessInfo.processInfo.environment
+        return ["XCTestConfigurationFilePath", "XCTestBundlePath", "XCTestSessionIdentifier"]
+            .contains { environment[$0] != nil }
+    }()
 }
 
 /// Identifiers for SwiftUI window scenes.

@@ -414,6 +414,51 @@ enum TaskbarLayout {
         }
     }
 
+    // MARK: Dragging the bar to another edge
+
+    /// How far the pointer has to move, with the button held down on an empty part of the bar,
+    /// before it counts as a drag. A plain click never moves the bar.
+    static let barDragThreshold: CGFloat = 8
+    /// How much closer the pointer has to be to another edge before the bar's target changes,
+    /// as a share of the display. Keeps the target from flickering along a diagonal.
+    static let barDragHysteresis: CGFloat = 0.04
+
+    /// The edge a dragged taskbar lands on: the edge of its display the pointer is closest to.
+    ///
+    /// Distances are a share of the display's width and height, which cuts the display along its
+    /// diagonals, the way the Windows taskbar chooses an edge. AppKit coordinates (y grows upward).
+    /// A pointer outside the display counts as being on the display's nearest edge. The target
+    /// stays on `current` until another edge is closer by more than `barDragHysteresis`.
+    static func dragEdge(for point: CGPoint, in screen: CGRect, current: TaskbarPosition) -> TaskbarPosition {
+        guard screen.width > 0, screen.height > 0 else { return current }
+        let x = min(max((point.x - screen.minX) / screen.width, 0), 1)
+        let y = min(max((point.y - screen.minY) / screen.height, 0), 1)
+        let distances: [(edge: TaskbarPosition, distance: CGFloat)] = [
+            (.bottom, y), (.top, 1 - y), (.left, x), (.right, 1 - x),
+        ]
+        var best = current
+        var bestDistance = (distances.first { $0.edge == current }?.distance ?? 1) - barDragHysteresis
+        for (edge, distance) in distances where edge != current && distance < bestDistance {
+            best = edge
+            bestDistance = distance
+        }
+        return best
+    }
+
+    /// How far outside the bar the pointer has to go before the bar can land on another edge.
+    static let barDragHomeMargin: CGFloat = 12
+
+    /// The edge a dragged taskbar lands on, given where the bar is now. While the pointer is on
+    /// the bar itself, or within `barDragHomeMargin` of it, the bar stays on its own edge (`home`),
+    /// so a drag along the bar never moves it, not even at a corner of the screen. Past that,
+    /// `dragEdge` decides.
+    static func dragTarget(
+        for point: CGPoint, bar: CGRect, home: TaskbarPosition, screen: CGRect, current: TaskbarPosition
+    ) -> TaskbarPosition {
+        if bar.insetBy(dx: -barDragHomeMargin, dy: -barDragHomeMargin).contains(point) { return home }
+        return dragEdge(for: point, in: screen, current: current)
+    }
+
     /// Gap between a rounded taskbar and the screen edge.
     static let floatingMargin: CGFloat = 6
     static let roundedCornerRadius: CGFloat = 14

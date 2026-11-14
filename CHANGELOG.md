@@ -3,7 +3,24 @@
 Every release is listed here, newest first. The version comes from `Config/Version.xcconfig`
 and is changed with `./version.sh`. See "Versions and releases" in the README.
 
+## 1.2.0 (2026-11-14)
+
+### Taskbar
+
+- **Drag the taskbar to another edge.** Press and hold an empty part of the taskbar and drag toward the left, right, top, or bottom of the screen. An outline shows where it will land.
+- **Right-click an empty part of the taskbar** for its menu: Add Icons, Add from Apple Dock, Position on Screen, Taskbar & Dock Settings, App Icon Controls, and Switch to Apple Dock. The Applications button has the same menu.
+- **Add Icons.** Pick apps in a file chooser to keep them on the taskbar.
+- **Add from Apple Dock.** Brings over the apps kept in the Apple Dock, one at a time or all at once.
+- **Drop apps from Finder** onto the taskbar to keep them there. Dropped between two apps, they land in that spot.
+
+### Safer
+
+- If this app turned the macOS Dock off, the Dock now comes back when the app quits, and goes off again at the next launch. Quitting can no longer leave a Mac with no Dock and no taskbar.
+- The README says how to remove the app and how to bring the Dock back by hand.
+
 ## 1.1.0 (2026-11-14)
+
+Not published on its own. Everything in it is part of 1.2.0.
 
 ### Taskbar
 

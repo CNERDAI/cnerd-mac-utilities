@@ -67,28 +67,60 @@ private struct TaskbarBar: View {
         .padding(isHorizontal ? .vertical : .horizontal, TaskbarLayout.barMargin)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: frameAlignment)
         .contentShape(Rectangle())
-        // An app dropped on the empty part of a chosen-apps taskbar joins that display's apps.
+        // An app dragged in from Finder and dropped on the empty part of the bar is kept on the
+        // taskbar. On a chosen-apps taskbar, an app dragged from another taskbar joins that
+        // display's apps.
         .onDrop(
-            of: content.isChosenApps ? [UTType.text] : [],
-            delegate: ChosenDisplayDropDelegate(displayID: displayID, controller: controller)
+            of: content.isChosenApps ? [UTType.fileURL, UTType.text] : [UTType.fileURL],
+            delegate: BarDropDelegate(displayID: displayID, controller: controller)
         )
-        // On a bar without its Applications button, a right-click on an empty part of the bar
-        // gives that button's menu, so the settings and the switch to the Apple Dock stay
-        // within reach. Other bars get no menu there.
-        .taskbarMenu(edge: position) {
-            guard !content.showsButtons else { return [] }
-            return [
-                .button("Taskbar & Dock Settings…") { controller.openSettings(.taskbar) },
-                .button("App Icon Controls…") { controller.openSettings(.appIcons) },
-                .divider,
-                .button(BarMode.taskbar.switchTitle) { controller.switchBar(to: .appleDock) },
-            ]
+        // A right-click on any empty part of the bar gives the bar's own menu: Add Icons, the
+        // position, the settings, and the switch to the Apple Dock. The same part of the bar
+        // can be dragged to another edge of the screen (`isBar`).
+        .taskbarMenu(edge: position, isBar: true) {
+            barMenu
         }
         .background { background }
         .overlay { border }
     }
 
     // MARK: - Pieces
+
+    /// The menu of the bar itself. It opens from any empty part of the bar and from the
+    /// Applications button.
+    private var barMenu: [TaskbarMenuItem] {
+        [
+            .button("Add Icons…") { controller.chooseAppsToAdd(on: displayID) },
+            .submenu("Add from Apple Dock", appleDockMenu),
+            .submenu("Position on Screen", TaskbarPosition.allCases.map { edge in
+                .toggle(edge.title, isOn: edge == position) { _ in controller.setPosition(edge) }
+            }),
+            .divider,
+            .button("Taskbar & Dock Settings…") { controller.openSettings(.taskbar) },
+            .button("App Icon Controls…") { controller.openSettings(.appIcons) },
+            .divider,
+            // Hides the taskbar and brings the Dock back. The way back is in the menu bar icon's
+            // menu, the menu of this app's Dock icon, and the settings window.
+            .button(BarMode.taskbar.switchTitle) { controller.switchBar(to: .appleDock) },
+        ]
+    }
+
+    /// The apps kept in the Apple Dock that this taskbar does not keep yet. macOS does not let
+    /// an icon be dragged out of the Dock into another app, so this menu is the way across.
+    private var appleDockMenu: [TaskbarMenuItem] {
+        let apps = controller.appleDockAppsToAdd(on: displayID)
+        guard !apps.isEmpty else { return [.note("Every Apple Dock app is already here")] }
+        var items: [TaskbarMenuItem] = [
+            .button(apps.count == 1 ? "Add 1 App" : "Add All \(apps.count) Apps") {
+                controller.addApps(withIDs: apps.map(\.bundleID), on: displayID)
+            },
+            .divider,
+        ]
+        for app in apps {
+            items.append(.button(app.name) { controller.addApps(withIDs: [app.bundleID], on: displayID) })
+        }
+        return items
+    }
 
     private var applicationsButton: some View {
         let side = iconSize + 2 * TaskbarLayout.buttonPadding
@@ -101,17 +133,10 @@ private struct TaskbarBar: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .help("Click to open the Applications folder. Right-click for settings and to switch to the Apple Dock.")
+        .help("Click to open the Applications folder. Right-click to add icons, move the taskbar, open the settings, or switch to the Apple Dock.")
         .accessibilityLabel("Applications")
         .taskbarMenu(edge: position) {
-            [
-                .button("Taskbar & Dock Settings…") { controller.openSettings(.taskbar) },
-                .button("App Icon Controls…") { controller.openSettings(.appIcons) },
-                .divider,
-                // Hides the taskbar and brings the Dock back. The way back is in the menu bar icon's
-                // menu, the menu of this app's Dock icon, and the settings window.
-                .button(BarMode.taskbar.switchTitle) { controller.switchBar(to: .appleDock) },
-            ]
+            barMenu
         }
     }
 
@@ -201,6 +226,7 @@ private struct TaskbarBar: View {
                             groups: groups,
                             chosenDisplay: content.isChosenApps ? displayID : nil,
                             menuEdge: position,
+                            displayID: displayID,
                             controller: controller
                         )
                     }
@@ -269,6 +295,8 @@ private struct TaskbarAppCell: View {
     var chosenDisplay: UInt32?
     /// The edge of the taskbar this cell is on, so its menu opens beside the bar. Nil in a pop-up.
     var menuEdge: TaskbarPosition?
+    /// The display whose taskbar this cell is on. Nil in the Hidden Apps pop-up.
+    var displayID: UInt32?
     let controller: TaskbarController
 
     /// Measured size of this cell, used to tell which half the pointer is over during a drag.
@@ -309,12 +337,13 @@ private struct TaskbarAppCell: View {
                 return NSItemProvider(object: app.id as NSString)
             }
             .onDrop(
-                of: [UTType.text],
+                of: [UTType.text, UTType.fileURL],
                 delegate: TaskbarReorderDelegate(
                     targetID: app.id,
                     isHorizontal: isHorizontalBar,
                     length: isHorizontalBar ? cellSize.width : cellSize.height,
                     chosenDisplay: chosenDisplay,
+                    displayID: displayID,
                     controller: controller
                 )
             )
@@ -448,19 +477,28 @@ private struct TaskbarReorderDelegate: DropDelegate {
     let length: CGFloat
     /// Set on a display that shows only its chosen apps. The drag then changes that display's list.
     var chosenDisplay: UInt32?
+    /// The display whose taskbar the target is on. Apps dropped as files join that taskbar.
+    var displayID: UInt32?
     let controller: TaskbarController
+
+    func validateDrop(info: DropInfo) -> Bool {
+        // Files from Finder can only land on a taskbar, not in a pop-up.
+        !info.isFileDrop || displayID != nil
+    }
 
     func dropEntered(info: DropInfo) {
         place(info)
     }
 
     func dropUpdated(info: DropInfo) -> DropProposal? {
+        if info.isFileDrop { return DropProposal(operation: .copy) }
         place(info)
         return DropProposal(operation: .move)
     }
 
     private func place(_ info: DropInfo) {
-        guard length > 0 else { return }
+        // Files are only added once they are let go.
+        guard length > 0, !info.isFileDrop else { return }
         let offset = isHorizontal ? info.location.x : info.location.y
         withAnimation(.easeInOut(duration: 0.15)) {
             if let chosenDisplay {
@@ -475,6 +513,12 @@ private struct TaskbarReorderDelegate: DropDelegate {
     }
 
     func performDrop(info: DropInfo) -> Bool {
+        if info.isFileDrop {
+            guard let displayID else { return false }
+            let offset = isHorizontal ? info.location.x : info.location.y
+            let before = length > 0 ? offset < length / 2 : false
+            return info.addDroppedApps(to: controller, on: displayID, beside: (id: targetID, before: before))
+        }
         if let chosenDisplay, length > 0, !controller.isChosenDrag(onDisplayID: chosenDisplay) {
             let offset = isHorizontal ? info.location.x : info.location.y
             _ = controller.placeDraggedApp(before: offset < length / 2, targetID: targetID, onChosenDisplay: chosenDisplay)
@@ -484,14 +528,15 @@ private struct TaskbarReorderDelegate: DropDelegate {
     }
 }
 
-/// Handles a drop on the empty part of a taskbar that shows only its chosen apps: the dragged app
+/// Handles a drop on the empty part of a taskbar. Apps dragged in from Finder are kept on the
+/// taskbar. On a taskbar that shows only its chosen apps, an app dragged from another taskbar
 /// joins that display's apps. Nothing changes until the app is let go.
-private struct ChosenDisplayDropDelegate: DropDelegate {
+private struct BarDropDelegate: DropDelegate {
     let displayID: UInt32
     let controller: TaskbarController
 
     func validateDrop(info: DropInfo) -> Bool {
-        controller.draggedAppID != nil && controller.showsChosenApps(on: displayID)
+        info.isFileDrop || (controller.draggedAppID != nil && controller.showsChosenApps(on: displayID))
     }
 
     func dropUpdated(info: DropInfo) -> DropProposal? {
@@ -499,9 +544,50 @@ private struct ChosenDisplayDropDelegate: DropDelegate {
     }
 
     func performDrop(info: DropInfo) -> Bool {
+        if info.isFileDrop {
+            return info.addDroppedApps(to: controller, on: displayID, beside: nil)
+        }
         let added = controller.addDraggedApp(toChosenDisplay: displayID)
         controller.endDrag()
         return added
+    }
+}
+
+private extension DropInfo {
+    /// True when files are being dragged in from another app, such as apps from Finder.
+    /// A drag that started on the taskbar carries text, never files.
+    var isFileDrop: Bool {
+        hasItemsConforming(to: [UTType.fileURL])
+    }
+
+    /// Reads the dropped files and hands the apps among them to the taskbar. The files are read
+    /// a moment after the drop, so this returns true as soon as there is something to read.
+    @MainActor
+    func addDroppedApps(
+        to controller: TaskbarController, on displayID: UInt32, beside target: (id: String, before: Bool)?
+    ) -> Bool {
+        let providers = itemProviders(for: [UTType.fileURL])
+        guard !providers.isEmpty else { return false }
+        Task { @MainActor in
+            var urls: [URL] = []
+            for provider in providers {
+                if let url = await droppedFileURL(from: provider) { urls.append(url) }
+            }
+            withAnimation(.easeInOut(duration: 0.15)) {
+                _ = controller.addDroppedApps(at: urls, on: displayID, beside: target)
+            }
+        }
+        return true
+    }
+}
+
+/// The file behind one dragged item, or nil when the item is not a file.
+@MainActor
+private func droppedFileURL(from provider: NSItemProvider) async -> URL? {
+    await withCheckedContinuation { continuation in
+        _ = provider.loadObject(ofClass: URL.self) { url, _ in
+            continuation.resume(returning: url)
+        }
     }
 }
 

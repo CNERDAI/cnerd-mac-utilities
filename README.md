@@ -32,6 +32,7 @@ Every module has its own on and off switch. When a module is off it does nothing
 
 - **A Windows-style taskbar** on all displays, on the main display only, or on the other displays only.
 - **Any edge.** Bottom, top, left, or right. This is separate from the Dock's position.
+- **Drag it to another edge.** Press and hold an empty part of the taskbar and drag toward the left, right, top, or bottom of the screen. An outline shows where it will land. Let go to move it.
 - **Look.** Square edges that run edge to edge like Windows, or rounded edges that float like the Dock. Glass or solid background.
 - **Icon size.** A slider from 16 to 72 points. The taskbar follows as you drag.
 - **App names.** On or off, in four sizes, placed right of, left of, above, or below the icon.
@@ -40,7 +41,11 @@ Every module has its own on and off switch. When a module is off it does nothing
 - **Drag to reorder.** The order is saved.
 - **Keep in Taskbar.** A kept app stays on the taskbar when it is not running, and a click opens it.
 - **Auto-fit.** When the apps do not fit, the taskbar hides the names, then shrinks the icons, then puts the rest behind a "+N" button. A click on that button opens a pop-up with the apps that did not fit.
-- **Applications button.** A click opens the Applications folder. A right-click gives Taskbar & Dock Settings, App Icon Controls, and Switch to Apple Dock.
+- **Right-click the taskbar.** A right-click on any empty part of the taskbar, or on the Applications button, gives Add Icons, Add from Apple Dock, Position on Screen, Taskbar & Dock Settings, App Icon Controls, and Switch to Apple Dock.
+- **Add Icons.** Pick apps in a file chooser and they stay on the taskbar.
+- **Add from Apple Dock.** Lists the apps kept in the Apple Dock that the taskbar does not have yet. Add one, or all of them at once.
+- **Drop apps from Finder.** Drag an app from the Applications folder, or from any Finder window, onto the taskbar. Drop it between two apps to put it there.
+- **Applications button.** A click opens the Applications folder.
 - **Trash.** A click opens the Trash. A right-click gives Open, Empty Trash (it asks first), and Eject for each disk or all of them. The Trash can be turned off.
 - **Keep Windows Clear of the Taskbar.** Maximize and snap stop at the taskbar's edge.
 - **Follows the Dock.** When the Dock is hidden, the taskbar slides into the Dock's space. The taskbar steps aside for apps in Full Screen.
@@ -80,7 +85,7 @@ Every module has its own on and off switch. When a module is off it does nothing
 
 - **One switch** goes between this taskbar and the Apple Dock, and back. It is in the Applications button's menu, in Taskbar & Dock settings, in the menu bar icon's menu, and in this app's Dock icon menu.
 - **Dock switches.** Auto-hide, position (left, bottom, or right), and size.
-- **Turn Off the macOS Dock.** Keeps the Dock from sliding back in while the taskbar is in use. The app asks first, and one switch brings the Dock back.
+- **Turn Off the macOS Dock.** Keeps the Dock from sliding back in while the taskbar is in use. The app asks first, and one switch brings the Dock back. The Dock also comes back by itself when the app quits, and goes off again the next time the app opens.
 
 ### Finder Enhancements
 
@@ -143,6 +148,20 @@ open "build/Build/Products/Debug/CNERD Mac Utilities.app"
 
 Closing the window does not quit the app. Use the menu bar icon to reopen it or quit.
 
+## Removing the app
+
+1. If you turned the Dock off, switch **Turn Off the macOS Dock** off again, or just quit the app. Quitting brings the Dock back.
+2. Quit the app from the menu bar icon and drag it from Applications to the Trash.
+3. Optional: remove its saved settings with `defaults delete ai.cnerd.MacUtilities`.
+
+If the app ever stops without bringing the Dock back (a crash or a forced quit), this puts the Dock back by hand:
+
+```bash
+defaults delete com.apple.dock autohide-delay
+defaults write com.apple.dock autohide -bool false
+killall Dock
+```
+
 ## Permissions
 
 The app asks for a permission only when a feature needs it.
@@ -163,6 +182,7 @@ macOS does not let apps change everything Windows users might expect. [docs/FEAS
 - The app cannot be sandboxed, so it cannot be sold in the Mac App Store. Window control of other apps needs the Accessibility API.
 - macOS shows the real Dock on one display at a time. The taskbar is this app's own bar, and only this app's maximize and snap know to stay clear of it.
 - Turning the Dock off uses an undocumented Dock setting. The app asks before doing it, and one switch brings the Dock back.
+- macOS does not hand a Dock icon to another app when you drag it out of the Dock. It only offers to remove it. So the taskbar has Add from Apple Dock in its right-click menu, and takes apps dragged from Finder.
 
 ## Building and testing
 

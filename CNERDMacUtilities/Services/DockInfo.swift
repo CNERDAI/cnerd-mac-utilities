@@ -10,6 +10,40 @@ enum DockInfo {
         CFPreferencesAppSynchronize(dockID)
         return CFPreferencesGetAppBooleanValue("autohide" as CFString, dockID, nil)
     }
+
+    /// The apps kept in the macOS Dock, in the Dock's order. Finder and the Trash are not in
+    /// this list, because the Dock always shows them.
+    static var keptApps: [DockApp] {
+        let dockID = "com.apple.dock" as CFString
+        CFPreferencesAppSynchronize(dockID)
+        guard let tiles = CFPreferencesCopyAppValue("persistent-apps" as CFString, dockID) as? [[String: Any]] else { return [] }
+        return DockApp.apps(fromDockTiles: tiles)
+    }
+}
+
+/// One app kept in the macOS Dock.
+struct DockApp: Identifiable, Equatable, Sendable {
+    let bundleID: String
+    /// The name the Dock shows for it.
+    let name: String
+
+    var id: String { bundleID }
+
+    /// Reads the Dock's "persistent-apps" preference. Each entry is a tile with the app's bundle
+    /// identifier and label under "tile-data". Spacers and anything else without a bundle
+    /// identifier are skipped, and an app listed twice is kept once. These keys are the Dock's
+    /// own and are not documented by Apple, so anything unexpected is simply left out.
+    static func apps(fromDockTiles tiles: [[String: Any]]) -> [DockApp] {
+        var seen = Set<String>()
+        return tiles.compactMap { tile in
+            guard let data = tile["tile-data"] as? [String: Any],
+                  let bundleID = data["bundle-identifier"] as? String, !bundleID.isEmpty,
+                  seen.insert(bundleID).inserted
+            else { return nil }
+            let label = (data["file-label"] as? String) ?? ""
+            return DockApp(bundleID: bundleID, name: label.isEmpty ? bundleID : label)
+        }
+    }
 }
 
 extension NSScreen {

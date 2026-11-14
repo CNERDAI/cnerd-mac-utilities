@@ -42,6 +42,7 @@ final class AppSettings {
         case taskbarDisplayRules = "taskbar.displayRules"
         case taskbarTurnsDockOff = "taskbar.turnsDockOff"
         case dockAutoHideBeforeOff = "dock.autoHideBeforeOff"
+        case dockOffAgainAtLaunch = "dock.offAgainAtLaunch"
     }
 
     // Window Manager
@@ -97,6 +98,9 @@ final class AppSettings {
     var taskbarTurnsDockOff: Bool { didSet { store(taskbarTurnsDockOff, .taskbarTurnsDockOff) } }
     /// What the Dock's auto-hide setting was before the Dock was turned off, so it can be put back.
     var dockAutoHideBeforeOff: Bool { didSet { store(dockAutoHideBeforeOff, .dockAutoHideBeforeOff) } }
+    /// True when the Dock was off as the app quit. The app brings the Dock back on the way out
+    /// and turns it off again at the next launch.
+    var dockOffAgainAtLaunch: Bool { didSet { store(dockOffAgainAtLaunch, .dockOffAgainAtLaunch) } }
     /// When on, Window Manager keeps maximized and snapped windows clear of the taskbar.
     var taskbarReserveSpace: Bool { didSet { store(taskbarReserveSpace, .taskbarReserveSpace) } }
 
@@ -169,6 +173,7 @@ final class AppSettings {
         taskbarDisplayRules = Self.loadDisplayRules(from: defaults)
         taskbarTurnsDockOff = defaults.bool(forKey: Key.taskbarTurnsDockOff.rawValue)
         dockAutoHideBeforeOff = defaults.bool(forKey: Key.dockAutoHideBeforeOff.rawValue)
+        dockOffAgainAtLaunch = defaults.bool(forKey: Key.dockOffAgainAtLaunch.rawValue)
         showMenuBarIcon = defaults.bool(forKey: Key.showMenuBarIcon.rawValue)
         hasDonated = defaults.bool(forKey: Key.hasDonated.rawValue)
     }
