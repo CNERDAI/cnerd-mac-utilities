@@ -25,7 +25,7 @@ Thanks for helping. A few rules keep the app small and trustworthy.
 ./build.sh test
 ```
 
-All tests must pass with no compiler warnings. Add tests for new pure logic. For anything that touches other apps' windows, the Dock, or Finder, say in the pull request what you tried by hand and on which macOS version.
+All tests must pass with no compiler warnings. `./build.sh` raises the build number in `Config/Version.xcconfig` on every build. Leave the version itself alone: it is raised with `./version.sh` when a release is made. Add tests for new pure logic. For anything that touches other apps' windows, the Dock, or Finder, say in the pull request what you tried by hand and on which macOS version.
 
 ## Adding a module
 

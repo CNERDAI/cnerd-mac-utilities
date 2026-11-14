@@ -10,7 +10,7 @@ If it saves you time, you can [support development with a donation](https://cner
 | Module | Features |
 | --- | --- |
 | **Window Manager** | Maximize that fills the screen without entering Full Screen, and restores on the second use. Left half, right half, center. Global keyboard shortcuts. Optional: make the green window button maximize instead of going Full Screen (beta). |
-| **Taskbar & Dock** | A Windows-style taskbar on all displays, the main display, or the other displays. Put it on the bottom, top, left, or right. Square or rounded edges, glass or solid, icon size, app names and their size and position. Drag apps to reorder. Right-click for Keep in Taskbar, Show All Windows, Show in Finder, Hide, Quit. Trash button. Switches for the real Dock: auto-hide, position, size, and turn the Dock off. |
+| **Taskbar & Dock** | A Windows-style taskbar on all displays, the main display, or the other displays. Put it on the bottom, top, left, or right. Square or rounded edges, glass or solid, an icon size slider, app names and their size and position. When the apps do not fit, the taskbar hides the names, shrinks the icons, then puts the rest behind a +N button. With more than one display, each taskbar can show only the apps that have a window on its display, or only the apps you choose for it. Drag apps to reorder. Group apps by topic (AI Tools, Browsers, and so on) or into groups you make, and arrange them in **App Icon Controls**. Right-click an app for Keep in Taskbar, Show All Windows, Show in Finder, Hide, Quit. Hide running apps behind a Hidden Apps button that shows how many are running, and open them from a pop-up next to the taskbar. Right-click the Trash to empty it or eject a disk. Right-click the Applications button for the taskbar settings. One switch goes between the taskbar and the Apple Dock, and back. Switches for the real Dock: auto-hide, position, size, and turn the Dock off. |
 | **Finder Enhancements** | Show hidden files, copy the full path of the Finder selection, quick access to common folders. |
 | **Desktop Manager** | Read-only list of Desktop files with sorting, and information about every connected display. |
 
@@ -23,7 +23,7 @@ Every module has its own on and off switch. When a module is off it does nothing
 
 ## Install
 
-**Download:** get [CNERD-Mac-Utilities-1.0.0.dmg](https://github.com/CNERDAI/cnerd-mac-utilities/releases/latest) from the latest release. It is signed and notarized by Apple. Open the `.dmg` and drag the app to Applications.
+**Download:** get the `.dmg` from the [latest release](https://github.com/CNERDAI/cnerd-mac-utilities/releases/latest). It is signed and notarized by Apple. Open the `.dmg` and drag the app to Applications.
 
 **Build it yourself:**
 
@@ -57,7 +57,7 @@ The app asks for a permission only when a feature needs it.
 | Permission | Used for | When macOS asks |
 | --- | --- | --- |
 | Accessibility | Moving and resizing other apps' windows, the green button option | When you click Request Access |
-| Automation: Finder | Reading which files are selected, to copy their paths | First use of Copy Path |
+| Automation: Finder | Reading which files are selected, to copy their paths. Emptying the Trash from the taskbar. | First use of Copy Path or Empty Trash |
 | Automation: System Events | Changing Dock auto-hide, position, and size | First use of a Dock switch |
 | Desktop folder | Listing the files on your Desktop | First time you open Desktop Manager |
 
@@ -81,6 +81,23 @@ xcodegen generate   # regenerate the Xcode project, then open CNERDMacUtilities.
 
 `project.yml` is the source of truth for the Xcode project. Run `xcodegen generate` after adding, moving, or deleting files.
 
+## Versions and releases
+
+The version lives in one file, `Config/Version.xcconfig`, and is changed with `./version.sh`:
+
+```bash
+./version.sh          # show the version and build number, for example 1.1.0 (12)
+./version.sh patch    # 1.1.0 -> 1.1.1   fixes
+./version.sh minor    # 1.1.0 -> 1.2.0   new features
+./version.sh major    # 1.1.0 -> 2.0.0   big changes
+```
+
+- **The build number goes up on every build.** `./build.sh` raises it by one, so the app always shows which build is running. The sidebar and the Dashboard show it as `1.1.0 (12)`.
+- **Every release gets a new version.** `./release.sh` stops if the version already has a release tag.
+- **Every release is written down** in [CHANGELOG.md](CHANGELOG.md).
+
+To make a release: raise the version, add its section to `CHANGELOG.md`, commit, run `./release.sh`, then tag the commit `v<version>` and publish the `.dmg`.
+
 **Signing.** By default the app is signed to run locally, which needs no Apple developer account. macOS forgets the Accessibility permission each time an ad-hoc signed app is rebuilt. To avoid that, create `Config/Signing.local.xcconfig` with your own certificate. See the comments in `Config/Signing.xcconfig`.
 
 **Releases.** `./release.sh` builds a universal Release app, signs it with a Developer ID certificate, makes the `.dmg`, and can notarize it. See the comments at the top of the script.
@@ -89,12 +106,12 @@ xcodegen generate   # regenerate the Xcode project, then open CNERDMacUtilities.
 
 ```
 project.yml                     XcodeGen project definition
-Config/                         Signing settings, generated Info.plist and entitlements
+Config/                         Version, signing settings, generated Info.plist and entitlements
 CNERDMacUtilities/
   App/                          App entry point and app delegate
   Core/                         Settings store, environment, shared types
   Models/                       Plain data types and pure layout and ordering rules
-  Services/                     Permissions, login item, global hot keys, Dock facts
+  Services/                     Permissions, login item, global hot keys, Dock facts, window locations
   Modules/
     WindowManager/              Accessibility window control, geometry, green button tap
     Taskbar/                    Taskbar panels, running apps, Dock settings
@@ -104,6 +121,8 @@ CNERDMacUtilities/
   Resources/                    Asset catalog, including the app icon
 CNERDMacUtilitiesTests/         Unit tests
 docs/                           FEASIBILITY.md and ARCHITECTURE.md
+CHANGELOG.md                    What changed in each release
+version.sh                      Shows or raises the version
 Artwork/                        Icon source artwork
 ```
 

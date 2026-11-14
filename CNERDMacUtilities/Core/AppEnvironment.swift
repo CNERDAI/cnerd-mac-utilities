@@ -1,4 +1,4 @@
-import Foundation
+import AppKit
 import Observation
 
 /// Selected sidebar destination, shared so the Dashboard can jump to a module.
@@ -6,6 +6,20 @@ import Observation
 @Observable
 final class AppNavigation {
     var selection: SidebarItem? = .dashboard
+
+    /// Reopens the main window after it was closed. Set by the main window the first time it shows.
+    @ObservationIgnored var openMainWindow: (() -> Void)?
+
+    /// Brings the main window forward on one screen. Used by the taskbar, which lives outside the window.
+    func show(_ item: SidebarItem) {
+        selection = item
+        openMainWindow?()
+        if let window = NSApp.windows.first(where: { $0.identifier?.rawValue == WindowID.main }) {
+            if window.isMiniaturized { window.deminiaturize(nil) }
+            window.makeKeyAndOrderFront(nil)
+        }
+        NSApp.activate()
+    }
 }
 
 /// Creates and owns every service and module. Views get this through the SwiftUI environment.
@@ -23,11 +37,15 @@ final class AppEnvironment {
     let desktop: DesktopController
     let taskbar: TaskbarController
 
+    /// The one environment of the running app. The app delegate uses it to build the Dock icon's menu.
+    @ObservationIgnored static weak var current: AppEnvironment?
+
     init() {
         let settings = AppSettings()
         let permissions = PermissionsService()
         self.settings = settings
-        self.navigation = AppNavigation()
+        let navigation = AppNavigation()
+        self.navigation = navigation
         self.permissions = permissions
         self.loginItem = LoginItemService()
         self.windowManager = WindowManagerController(settings: settings, permissions: permissions)
@@ -37,6 +55,9 @@ final class AppEnvironment {
         self.taskbar = taskbar
         // Window Manager keeps maximized and snapped windows clear of the taskbar.
         windowManager.screenInsets = { screen in taskbar.reservedInsets(for: screen) }
+        // Right-clicking the taskbar's Applications button opens its settings.
+        taskbar.showSettings = { item in navigation.show(item) }
+        Self.current = self
     }
 
     /// Dashboard status for a module, or nil if the item is not a module.

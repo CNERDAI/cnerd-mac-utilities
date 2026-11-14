@@ -1,0 +1,8 @@
+// The app's version. Change it with ./version.sh, not by hand.
+//
+// MARKETING_VERSION is the version people see, such as 1.1.0. It goes up with every release:
+// release.sh refuses to build a version that already has a release tag.
+// CURRENT_PROJECT_VERSION is the build number. build.sh raises it by one on every build, and so
+// does every version change, so the app always shows which build is running: "1.1.0 (12)".
+MARKETING_VERSION = 1.1.0
+CURRENT_PROJECT_VERSION = 2

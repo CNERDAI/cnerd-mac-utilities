@@ -10,6 +10,9 @@
 #   xcrun notarytool store-credentials "name" --apple-id "you@example.com" --team-id TEAMID
 #
 # SIGN_IDENTITY and TEAM_ID can also be set in Config/release.env, which is not committed.
+#
+# Every release needs a new version. Raise it first with ./version.sh patch, minor, or major.
+# This script stops if the version already has a release tag (v1.1.0 and so on).
 set -euo pipefail
 cd "$(dirname "$0")"
 [ -f Config/release.env ] && source Config/release.env
@@ -25,12 +28,17 @@ mkdir -p "$OUT"
 : > "$LOG"
 say() { echo "$@" | tee -a "$LOG"; }
 
+VERSION="$(./version.sh number)"
+if git rev-parse -q --verify "refs/tags/v$VERSION" > /dev/null 2>&1 && [ "$(git rev-parse "v$VERSION^{commit}")" != "$(git rev-parse HEAD)" ]; then
+  say "Version $VERSION was already released (tag v$VERSION is on an earlier commit)."
+  say "Raise the version first: ./version.sh patch   (or minor, or major)"
+  exit 1
+fi
 XCODEGEN="$(command -v xcodegen || echo /opt/homebrew/bin/xcodegen)"
 "$XCODEGEN" generate >> "$LOG" 2>&1
 
-VERSION="$(sed -n 's/.*MARKETING_VERSION: *"\(.*\)".*/\1/p' project.yml | head -1)"
 DMG="$OUT/CNERD-Mac-Utilities-$VERSION.dmg"
-say "Building $APP_NAME $VERSION"
+say "Building $APP_NAME $(./version.sh)"
 
 xcodebuild -project CNERDMacUtilities.xcodeproj -scheme CNERDMacUtilities -configuration Release \
   -derivedDataPath build-release -destination 'generic/platform=macOS' \

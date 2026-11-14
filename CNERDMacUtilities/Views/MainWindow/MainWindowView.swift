@@ -3,6 +3,7 @@ import SwiftUI
 /// The main window: a fixed sidebar on the left and the selected screen on the right.
 struct MainWindowView: View {
     @Environment(AppEnvironment.self) private var environment
+    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         @Bindable var navigation = environment.navigation
@@ -16,6 +17,10 @@ struct MainWindowView: View {
             detail(for: navigation.selection ?? .dashboard)
         }
         .frame(minWidth: 820, minHeight: 540)
+        .onAppear {
+            // Lets the taskbar reopen this window after it was closed.
+            environment.navigation.openMainWindow = { openWindow(id: WindowID.main) }
+        }
     }
 
     @ViewBuilder
@@ -26,6 +31,7 @@ struct MainWindowView: View {
         case .finderEnhancements: FinderSettingsView()
         case .desktopManager: DesktopSettingsView()
         case .taskbar: TaskbarSettingsView()
+        case .appIcons: AppIconsSettingsView()
         case .generalSettings: GeneralSettingsView()
         }
     }
@@ -40,7 +46,7 @@ struct SidebarView: View {
             row(.dashboard)
 
             Section("Utilities") {
-                ForEach(SidebarItem.modules) { item in
+                ForEach(SidebarItem.utilities) { item in
                     row(item)
                 }
             }
@@ -64,7 +70,10 @@ struct SidebarView: View {
                 Link(AppInfo.developer, destination: AppInfo.websiteURL)
                     .font(.caption.weight(.semibold))
                     .help("Open the CNERD AI website")
-                Text("Version \(AppInfo.version) · Free and open source")
+                // The build number shows too, so it is clear which build is running.
+                Text("Version \(AppInfo.versionDisplay)")
+                    .font(.caption)
+                Text("Free and open source")
                     .font(.caption)
                 Group {
                     if environment.settings.hasDonated {

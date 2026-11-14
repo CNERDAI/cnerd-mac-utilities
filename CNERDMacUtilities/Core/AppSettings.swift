@@ -20,10 +20,13 @@ final class AppSettings {
         case hasDonated = "general.hasDonated"
         case taskbarEnabled = "taskbar.enabled"
         case taskbarDisplayMode = "taskbar.displayMode"
+        case taskbarAppScope = "taskbar.appScope"
         case taskbarShowAppNames = "taskbar.showAppNames"
         case taskbarReserveSpace = "taskbar.reserveSpace"
         case taskbarPosition = "taskbar.position"
+        /// Version 1.0 icon size: "small", "medium", or "large". Only read, to carry the choice over.
         case taskbarIconSize = "taskbar.iconSize"
+        case taskbarIconPoints = "taskbar.iconPoints"
         case taskbarNamePosition = "taskbar.namePosition"
         case taskbarGlassBackground = "taskbar.glassBackground"
         case taskbarCornerStyle = "taskbar.cornerStyle"
@@ -31,6 +34,13 @@ final class AppSettings {
         case taskbarShowTrash = "taskbar.showTrash"
         case taskbarPinnedApps = "taskbar.pinnedApps"
         case taskbarAppOrder = "taskbar.appOrder"
+        case taskbarGroupingEnabled = "taskbar.groupingEnabled"
+        case taskbarAutoGroupNewApps = "taskbar.autoGroupNewApps"
+        case taskbarGroups = "taskbar.groups"
+        case taskbarHiddenApps = "taskbar.hiddenApps"
+        case taskbarHiddenIcon = "taskbar.hiddenIcon"
+        case taskbarDisplayRules = "taskbar.displayRules"
+        case taskbarTurnsDockOff = "taskbar.turnsDockOff"
         case dockAutoHideBeforeOff = "dock.autoHideBeforeOff"
     }
 
@@ -53,10 +63,13 @@ final class AppSettings {
     // Taskbar
     var taskbarEnabled: Bool { didSet { store(taskbarEnabled, .taskbarEnabled) } }
     var taskbarDisplayMode: TaskbarDisplayMode { didSet { store(taskbarDisplayMode.rawValue, .taskbarDisplayMode) } }
+    /// Which taskbars an app shows on when more than one display has a taskbar.
+    var taskbarAppScope: TaskbarAppScope { didSet { store(taskbarAppScope.rawValue, .taskbarAppScope) } }
     var taskbarShowAppNames: Bool { didSet { store(taskbarShowAppNames, .taskbarShowAppNames) } }
     /// Which edge of each display the taskbar uses. Independent of the macOS Dock.
     var taskbarPosition: TaskbarPosition { didSet { store(taskbarPosition.rawValue, .taskbarPosition) } }
-    var taskbarIconSize: TaskbarIconSize { didSet { store(taskbarIconSize.rawValue, .taskbarIconSize) } }
+    /// Size of the app icons in points. See `TaskbarIconScale` for the range.
+    var taskbarIconPoints: Double { didSet { store(taskbarIconPoints, .taskbarIconPoints) } }
     /// Where an app's name sits relative to its icon.
     var taskbarNamePosition: TaskbarNamePosition { didSet { store(taskbarNamePosition.rawValue, .taskbarNamePosition) } }
     /// Translucent glass look when on, solid bar when off.
@@ -68,6 +81,20 @@ final class AppSettings {
     var taskbarPinnedApps: [String] { didSet { store(taskbarPinnedApps, .taskbarPinnedApps) } }
     /// Bundle identifiers in the order the user arranged them. Apps keep their spot between launches.
     var taskbarAppOrder: [String] { didSet { store(taskbarAppOrder, .taskbarAppOrder) } }
+    /// When on, the taskbar shows apps in groups with a divider between them.
+    var taskbarGroupingEnabled: Bool { didSet { store(taskbarGroupingEnabled, .taskbarGroupingEnabled) } }
+    /// When on, an app seen for the first time goes into the group for its topic. When off, it goes into Other.
+    var taskbarAutoGroupNewApps: Bool { didSet { store(taskbarAutoGroupNewApps, .taskbarAutoGroupNewApps) } }
+    /// The groups, in the order they show. Only used while grouping is on.
+    var taskbarGroups: [TaskbarGroup] { didSet { storeGroups() } }
+    /// Bundle identifiers of apps tucked behind the Hidden Apps button, in the order the pop-up shows them.
+    var taskbarHiddenApps: [String] { didSet { store(taskbarHiddenApps, .taskbarHiddenApps) } }
+    var taskbarHiddenIcon: HiddenAppsIcon { didSet { store(taskbarHiddenIcon.rawValue, .taskbarHiddenIcon) } }
+    /// What each display's taskbar shows when it was set up by hand. Displays not listed follow `taskbarAppScope`.
+    var taskbarDisplayRules: [TaskbarDisplayRule] { didSet { storeDisplayRules() } }
+    /// True when the Dock was turned off the last time the taskbar was in use.
+    /// Switching back to the taskbar then turns the Dock off again.
+    var taskbarTurnsDockOff: Bool { didSet { store(taskbarTurnsDockOff, .taskbarTurnsDockOff) } }
     /// What the Dock's auto-hide setting was before the Dock was turned off, so it can be put back.
     var dockAutoHideBeforeOff: Bool { didSet { store(dockAutoHideBeforeOff, .dockAutoHideBeforeOff) } }
     /// When on, Window Manager keeps maximized and snapped windows clear of the taskbar.
@@ -95,15 +122,17 @@ final class AppSettings {
             Key.showMenuBarIcon.rawValue: true,
             Key.taskbarEnabled.rawValue: false,
             Key.taskbarDisplayMode.rawValue: TaskbarDisplayMode.allDisplays.rawValue,
+            Key.taskbarAppScope.rawValue: TaskbarAppScope.allTaskbars.rawValue,
             Key.taskbarShowAppNames.rawValue: true,
             Key.taskbarReserveSpace.rawValue: true,
             Key.taskbarPosition.rawValue: TaskbarPosition.bottom.rawValue,
-            Key.taskbarIconSize.rawValue: TaskbarIconSize.medium.rawValue,
             Key.taskbarNamePosition.rawValue: TaskbarNamePosition.right.rawValue,
             Key.taskbarGlassBackground.rawValue: true,
             Key.taskbarCornerStyle.rawValue: TaskbarCornerStyle.square.rawValue,
             Key.taskbarNameSize.rawValue: TaskbarNameSize.small.rawValue,
             Key.taskbarShowTrash.rawValue: true,
+            Key.taskbarGroupingEnabled.rawValue: false,
+            Key.taskbarAutoGroupNewApps.rawValue: true,
         ])
 
         windowManagerEnabled = defaults.bool(forKey: Key.windowManagerEnabled.rawValue)
@@ -117,10 +146,14 @@ final class AppSettings {
         desktopSortOrder = DesktopSortOrder(rawValue: defaults.string(forKey: Key.desktopSortOrder.rawValue) ?? "") ?? .name
         taskbarEnabled = defaults.bool(forKey: Key.taskbarEnabled.rawValue)
         taskbarDisplayMode = TaskbarDisplayMode(rawValue: defaults.string(forKey: Key.taskbarDisplayMode.rawValue) ?? "") ?? .allDisplays
+        taskbarAppScope = TaskbarAppScope(rawValue: defaults.string(forKey: Key.taskbarAppScope.rawValue) ?? "") ?? .allTaskbars
         taskbarShowAppNames = defaults.bool(forKey: Key.taskbarShowAppNames.rawValue)
         taskbarReserveSpace = defaults.bool(forKey: Key.taskbarReserveSpace.rawValue)
         taskbarPosition = TaskbarPosition(rawValue: defaults.string(forKey: Key.taskbarPosition.rawValue) ?? "") ?? .bottom
-        taskbarIconSize = TaskbarIconSize(rawValue: defaults.string(forKey: Key.taskbarIconSize.rawValue) ?? "") ?? .medium
+        taskbarIconPoints = TaskbarIconScale.clamped(
+            (defaults.object(forKey: Key.taskbarIconPoints.rawValue) as? Double)
+                ?? TaskbarIconScale.points(forLegacySize: defaults.string(forKey: Key.taskbarIconSize.rawValue))
+        )
         taskbarNamePosition = TaskbarNamePosition(rawValue: defaults.string(forKey: Key.taskbarNamePosition.rawValue) ?? "") ?? .right
         taskbarGlassBackground = defaults.bool(forKey: Key.taskbarGlassBackground.rawValue)
         taskbarCornerStyle = TaskbarCornerStyle(rawValue: defaults.string(forKey: Key.taskbarCornerStyle.rawValue) ?? "") ?? .square
@@ -128,6 +161,13 @@ final class AppSettings {
         taskbarShowTrash = defaults.bool(forKey: Key.taskbarShowTrash.rawValue)
         taskbarPinnedApps = defaults.stringArray(forKey: Key.taskbarPinnedApps.rawValue) ?? []
         taskbarAppOrder = defaults.stringArray(forKey: Key.taskbarAppOrder.rawValue) ?? []
+        taskbarGroupingEnabled = defaults.bool(forKey: Key.taskbarGroupingEnabled.rawValue)
+        taskbarAutoGroupNewApps = defaults.bool(forKey: Key.taskbarAutoGroupNewApps.rawValue)
+        taskbarGroups = Self.loadGroups(from: defaults)
+        taskbarHiddenApps = defaults.stringArray(forKey: Key.taskbarHiddenApps.rawValue) ?? []
+        taskbarHiddenIcon = HiddenAppsIcon(rawValue: defaults.string(forKey: Key.taskbarHiddenIcon.rawValue) ?? "") ?? .sunglasses
+        taskbarDisplayRules = Self.loadDisplayRules(from: defaults)
+        taskbarTurnsDockOff = defaults.bool(forKey: Key.taskbarTurnsDockOff.rawValue)
         dockAutoHideBeforeOff = defaults.bool(forKey: Key.dockAutoHideBeforeOff.rawValue)
         showMenuBarIcon = defaults.bool(forKey: Key.showMenuBarIcon.rawValue)
         hasDonated = defaults.bool(forKey: Key.hasDonated.rawValue)
@@ -151,6 +191,30 @@ final class AppSettings {
             defaults.set(data, forKey: Key.shortcuts.rawValue)
         }
         NotificationCenter.default.post(name: .appSettingsDidChange, object: nil)
+    }
+
+    private func storeGroups() {
+        if let data = try? JSONEncoder().encode(taskbarGroups) {
+            defaults.set(data, forKey: Key.taskbarGroups.rawValue)
+        }
+        NotificationCenter.default.post(name: .appSettingsDidChange, object: nil)
+    }
+
+    private func storeDisplayRules() {
+        if let data = try? JSONEncoder().encode(taskbarDisplayRules) {
+            defaults.set(data, forKey: Key.taskbarDisplayRules.rawValue)
+        }
+        NotificationCenter.default.post(name: .appSettingsDidChange, object: nil)
+    }
+
+    private static func loadDisplayRules(from defaults: UserDefaults) -> [TaskbarDisplayRule] {
+        guard let data = defaults.data(forKey: Key.taskbarDisplayRules.rawValue) else { return [] }
+        return (try? JSONDecoder().decode([TaskbarDisplayRule].self, from: data)) ?? []
+    }
+
+    private static func loadGroups(from defaults: UserDefaults) -> [TaskbarGroup] {
+        guard let data = defaults.data(forKey: Key.taskbarGroups.rawValue) else { return [] }
+        return (try? JSONDecoder().decode([TaskbarGroup].self, from: data)) ?? []
     }
 
     private static func loadShortcuts(from defaults: UserDefaults) -> [ShortcutAction: KeyCombo] {

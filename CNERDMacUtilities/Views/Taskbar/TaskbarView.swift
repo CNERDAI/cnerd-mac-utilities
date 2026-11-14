@@ -2,38 +2,77 @@ import AppKit
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// The contents of one taskbar: an Applications button, the apps, and the Trash.
-/// Lays out left to right on the top and bottom edges, and top to bottom on the left and right edges.
+/// The taskbar of one display. It asks the controller which apps belong on this display and how
+/// they fit the bar, then draws the result.
 struct TaskbarView: View {
     let controller: TaskbarController
+    /// The display this taskbar sits on.
+    let displayID: UInt32
+
+    var body: some View {
+        TaskbarBar(controller: controller, displayID: displayID, content: controller.content(for: displayID))
+    }
+}
+
+/// The contents of one taskbar: an Applications button, the apps (in groups when grouping is on),
+/// the More button when apps did not fit, the Hidden Apps button, and the Trash.
+/// Lays out left to right on the top and bottom edges, and top to bottom on the left and right edges.
+private struct TaskbarBar: View {
+    let controller: TaskbarController
+    let displayID: UInt32
+    /// The apps fitted to this bar. Icon size and names come from here, not straight from the
+    /// settings, because a crowded bar shows smaller icons and hides names.
+    let content: TaskbarBarContent
 
     private var settings: AppSettings { controller.settings }
     private var position: TaskbarPosition { settings.taskbarPosition }
     private var isHorizontal: Bool { position.isHorizontal }
     private var isRounded: Bool { settings.taskbarCornerStyle == .rounded }
-    private var iconSize: CGFloat { settings.taskbarIconSize.points }
+    private var iconSize: CGFloat { content.iconSize }
+    private var showNames: Bool { content.showNames }
     /// On a side bar with names beside the icons, everything lines up on the left.
     private var alignsLeading: Bool {
-        !isHorizontal && settings.taskbarShowAppNames && settings.taskbarNamePosition.isBeside
+        !isHorizontal && showNames && settings.taskbarNamePosition.isBeside
     }
 
     var body: some View {
+        let spacing = TaskbarLayout.partSpacing
         let outer = isHorizontal
-            ? AnyLayout(HStackLayout(spacing: 8))
-            : AnyLayout(VStackLayout(alignment: alignsLeading ? .leading : .center, spacing: 8))
+            ? AnyLayout(HStackLayout(spacing: spacing))
+            : AnyLayout(VStackLayout(alignment: alignsLeading ? .leading : .center, spacing: spacing))
 
         outer {
-            applicationsButton
-            separator
+            // A display that shows only its chosen apps can leave out the other buttons.
+            if content.showsButtons {
+                applicationsButton
+                separator
+            }
             appList
-            if settings.taskbarShowTrash {
+            if !content.overflow.isEmpty {
+                MoreAppsButton(
+                    controller: controller, displayID: displayID, apps: content.overflow,
+                    iconSize: iconSize, isHorizontalBar: isHorizontal
+                )
+            }
+            if content.showsButtons, !controller.hiddenApps.isEmpty {
+                separator
+                HiddenAppsButton(controller: controller, iconSize: iconSize)
+            }
+            if content.showsButtons, settings.taskbarShowTrash {
                 separator
                 trashButton
             }
         }
-        .padding(isHorizontal ? .horizontal : .vertical, 10)
+        .padding(isHorizontal ? .horizontal : .vertical, TaskbarLayout.barEndPadding)
         .padding(isHorizontal ? .vertical : .horizontal, TaskbarLayout.barMargin)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: frameAlignment)
+        .contentShape(Rectangle())
+        // An app dropped on the empty part of a chosen-apps taskbar joins that display's apps.
+        .onDrop(
+            of: content.isChosenApps ? [UTType.text] : [],
+            delegate: ChosenDisplayDropDelegate(displayID: displayID, controller: controller)
+        )
+        .modifier(BarSettingsMenu(isOn: !content.showsButtons, controller: controller))
         .background { background }
         .overlay { border }
     }
@@ -51,8 +90,16 @@ struct TaskbarView: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .help("Open the Applications folder")
+        .help("Click to open the Applications folder. Right-click for settings and to switch to the Apple Dock.")
         .accessibilityLabel("Applications")
+        .contextMenu {
+            Button("Taskbar & Dock Settings…") { controller.openSettings(.taskbar) }
+            Button("App Icon Controls…") { controller.openSettings(.appIcons) }
+            Divider()
+            // Hides the taskbar and brings the Dock back. The way back is in the menu bar icon's
+            // menu, the menu of this app's Dock icon, and the settings window.
+            Button(BarMode.taskbar.switchTitle) { controller.switchBar(to: .appleDock) }
+        }
     }
 
     private var trashButton: some View {
@@ -74,36 +121,74 @@ struct TaskbarView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .help("Open the Trash")
+        .help("Click to open the Trash. Right-click to empty it or eject a disk.")
         .accessibilityLabel("Trash")
+        .contextMenu {
+            trashMenu
+        }
     }
 
+    /// Mirrors what the Dock's Trash offers: open, empty, and eject.
+    @ViewBuilder
+    private var trashMenu: some View {
+        Button("Open") { controller.openTrash() }
+        Button("Empty Trash…") { controller.emptyTrash() }
+
+        let volumes = controller.ejectableVolumes
+        if !volumes.isEmpty {
+            Divider()
+            ForEach(volumes) { volume in
+                Button("Eject \(volume.name)") { controller.eject(volume) }
+            }
+            if volumes.count > 1 {
+                Button("Eject All") { controller.ejectAll() }
+            }
+        }
+    }
+
+    /// The line between the parts of the bar, and between groups. It scales with the icons.
     @ViewBuilder
     private var separator: some View {
+        let length = max(16, iconSize * 0.7)
+        let thickness = TaskbarLayout.separatorThickness
         if isHorizontal {
-            Divider().frame(height: 22)
+            Divider().frame(width: thickness, height: length)
         } else {
-            Divider().frame(width: 22)
+            Divider().frame(width: length, height: thickness)
         }
     }
 
     private var appList: some View {
+        let spacing = TaskbarLayout.appSpacing
         let inner = isHorizontal
-            ? AnyLayout(HStackLayout(spacing: 4))
-            : AnyLayout(VStackLayout(alignment: alignsLeading ? .leading : .center, spacing: 4))
+            ? AnyLayout(HStackLayout(spacing: spacing))
+            : AnyLayout(VStackLayout(alignment: alignsLeading ? .leading : .center, spacing: spacing))
 
+        // One section per group that has apps showing, or a single section when grouping is off.
+        let sections = content.sections
+        let groups = settings.taskbarGroupingEnabled ? settings.taskbarGroups : []
+
+        // The apps are fitted to the bar, so there is normally nothing to scroll. The scroll view
+        // stays as a safety net: if a name is drawn a point wider than measured, nothing is cut off.
         return ScrollView(isHorizontal ? .horizontal : .vertical, showsIndicators: false) {
             inner {
-                ForEach(controller.apps) { app in
-                    TaskbarAppCell(
-                        app: app,
-                        iconSize: iconSize,
-                        showName: settings.taskbarShowAppNames,
-                        namePosition: settings.taskbarNamePosition,
-                        nameSize: settings.taskbarNameSize.points,
-                        isHorizontalBar: isHorizontal,
-                        controller: controller
-                    )
+                ForEach(sections) { section in
+                    if section.id != sections.first?.id {
+                        separator
+                    }
+                    ForEach(section.apps) { app in
+                        TaskbarAppCell(
+                            app: app,
+                            iconSize: iconSize,
+                            showName: showNames,
+                            namePosition: settings.taskbarNamePosition,
+                            nameSize: settings.taskbarNameSize.points,
+                            isHorizontalBar: isHorizontal,
+                            groups: groups,
+                            chosenDisplay: content.isChosenApps ? displayID : nil,
+                            controller: controller
+                        )
+                    }
                 }
             }
         }
@@ -151,7 +236,8 @@ struct TaskbarView: View {
     }
 }
 
-/// One app on the taskbar. Click to open or switch, drag to reorder, right-click for the menu.
+/// One app on the taskbar or in the Hidden Apps pop-up. Click to open or switch, drag to reorder,
+/// right-click for the menu.
 private struct TaskbarAppCell: View {
     let app: TaskbarApp
     let iconSize: CGFloat
@@ -159,6 +245,13 @@ private struct TaskbarAppCell: View {
     let namePosition: TaskbarNamePosition
     let nameSize: CGFloat
     let isHorizontalBar: Bool
+    /// The groups an app can be moved to. Empty when grouping is off.
+    let groups: [TaskbarGroup]
+    /// A fixed width for a cell with the name above or below the icon. Nil uses the taskbar's own width.
+    var stackedWidth: CGFloat?
+    /// Set when the cell is on a display that shows only its chosen apps. Dragging then reorders
+    /// that display's own list, and the menu can take the app off that display.
+    var chosenDisplay: UInt32?
     let controller: TaskbarController
 
     /// Measured size of this cell, used to tell which half the pointer is over during a drag.
@@ -178,7 +271,7 @@ private struct TaskbarAppCell: View {
                 // Running marker, like the dot under a Dock icon. Wider and tinted for the app in front.
                 if app.isRunning {
                     Capsule()
-                        .fill(app.isActive ? Color.accentColor : Color.secondary.opacity(0.7))
+                        .fill(app.isActive ? Color.steadyAccent : Color.secondary.opacity(0.7))
                         .frame(width: app.isActive ? 16 : 5, height: 3)
                 }
             }
@@ -195,7 +288,7 @@ private struct TaskbarAppCell: View {
                 controller.activate(app)
             }
             .onDrag {
-                controller.draggedAppID = app.id
+                controller.beginAppDrag(app.id)
                 return NSItemProvider(object: app.id as NSString)
             }
             .onDrop(
@@ -204,6 +297,7 @@ private struct TaskbarAppCell: View {
                     targetID: app.id,
                     isHorizontal: isHorizontalBar,
                     length: isHorizontalBar ? cellSize.width : cellSize.height,
+                    chosenDisplay: chosenDisplay,
                     controller: controller
                 )
             )
@@ -237,8 +331,42 @@ private struct TaskbarAppCell: View {
                     get: { app.isPinned },
                     set: { controller.setPinned($0, app: app) }
                 ))
-            } else {
+            } else if app.isPinned {
                 Button("Remove from Taskbar") { controller.setPinned(false, app: app) }
+            }
+        }
+        if let chosenDisplay, let display = controller.displays.first(where: { $0.id == chosenDisplay }) {
+            Button("Remove from This Display") { controller.setChosen(false, appID: app.id, on: display) }
+        }
+        if app.canBePinned {
+            // Displays set to Only Apps I Choose. A check mark means the app shows there.
+            let chosenDisplays = controller.chosenDisplays
+            if !chosenDisplays.isEmpty {
+                Menu("Show on Display") {
+                    ForEach(chosenDisplays) { display in
+                        Toggle(display.name, isOn: Binding(
+                            get: { controller.isChosen(app.id, on: display) },
+                            set: { controller.setChosen($0, appID: app.id, on: display) }
+                        ))
+                    }
+                }
+            }
+        }
+        if app.canBePinned {
+            // Moves the app behind the Hidden Apps button, or brings it back. The app keeps running.
+            if controller.isHiddenFromTaskbar(app.id) {
+                Button("Show in Taskbar") { controller.setHiddenFromTaskbar(false, appID: app.id) }
+            } else {
+                Button("Hide from Taskbar") { controller.setHiddenFromTaskbar(true, appID: app.id) }
+            }
+        }
+        if app.canBePinned, !groups.isEmpty {
+            Menu("Move to Group") {
+                ForEach(groups) { group in
+                    Button(group.name.isEmpty ? "Untitled Group" : group.name) {
+                        controller.moveApp(app.id, toGroup: group.id)
+                    }
+                }
             }
         }
         if app.bundleURL != nil {
@@ -267,7 +395,7 @@ private struct TaskbarAppCell: View {
                 icon
                 if namePosition == .below { nameStacked }
             }
-            .frame(width: TaskbarLayout.stackedCellWidth(iconSize: iconSize, nameSize: nameSize) - 2 * TaskbarLayout.buttonPadding)
+            .frame(width: (stackedWidth ?? TaskbarLayout.stackedCellWidth(iconSize: iconSize, nameSize: nameSize)) - 2 * TaskbarLayout.buttonPadding)
         }
     }
 
@@ -312,6 +440,8 @@ private struct TaskbarReorderDelegate: DropDelegate {
     let isHorizontal: Bool
     /// Length of the target cell along the bar.
     let length: CGFloat
+    /// Set on a display that shows only its chosen apps. The drag then changes that display's list.
+    var chosenDisplay: UInt32?
     let controller: TaskbarController
 
     func dropEntered(info: DropInfo) {
@@ -327,13 +457,293 @@ private struct TaskbarReorderDelegate: DropDelegate {
         guard length > 0 else { return }
         let offset = isHorizontal ? info.location.x : info.location.y
         withAnimation(.easeInOut(duration: 0.15)) {
-            _ = controller.placeDraggedApp(before: offset < length / 2, targetID: targetID)
+            if let chosenDisplay {
+                // An app dragged in from another taskbar only joins once it is let go.
+                if controller.isChosenDrag(onDisplayID: chosenDisplay) {
+                    _ = controller.placeDraggedApp(before: offset < length / 2, targetID: targetID, onChosenDisplay: chosenDisplay)
+                }
+            } else {
+                _ = controller.placeDraggedApp(before: offset < length / 2, targetID: targetID)
+            }
         }
     }
 
     func performDrop(info: DropInfo) -> Bool {
-        controller.draggedAppID = nil
+        if let chosenDisplay, length > 0, !controller.isChosenDrag(onDisplayID: chosenDisplay) {
+            let offset = isHorizontal ? info.location.x : info.location.y
+            _ = controller.placeDraggedApp(before: offset < length / 2, targetID: targetID, onChosenDisplay: chosenDisplay)
+        }
+        controller.endDrag()
         return true
+    }
+}
+
+/// A right-click menu for the empty part of a taskbar that has no Applications button, so its
+/// settings stay within reach. Other taskbars get no menu there.
+private struct BarSettingsMenu: ViewModifier {
+    let isOn: Bool
+    let controller: TaskbarController
+
+    func body(content: Content) -> some View {
+        if isOn {
+            content.contextMenu {
+                Button("App Icon Controls…") { controller.openSettings(.appIcons) }
+                Button("Taskbar & Dock Settings…") { controller.openSettings(.taskbar) }
+            }
+        } else {
+            content
+        }
+    }
+}
+
+/// Handles a drop on the empty part of a taskbar that shows only its chosen apps: the dragged app
+/// joins that display's apps. Nothing changes until the app is let go.
+private struct ChosenDisplayDropDelegate: DropDelegate {
+    let displayID: UInt32
+    let controller: TaskbarController
+
+    func validateDrop(info: DropInfo) -> Bool {
+        controller.draggedAppID != nil && controller.showsChosenApps(on: displayID)
+    }
+
+    func dropUpdated(info: DropInfo) -> DropProposal? {
+        DropProposal(operation: .copy)
+    }
+
+    func performDrop(info: DropInfo) -> Bool {
+        let added = controller.addDraggedApp(toChosenDisplay: displayID)
+        controller.endDrag()
+        return added
+    }
+}
+
+/// The button at the end of the taskbar that holds the hidden apps. It shows how many of them are
+/// running. Click it to open the pop-up, or drop an app on it to hide that app.
+private struct HiddenAppsButton: View {
+    let controller: TaskbarController
+    let iconSize: CGFloat
+
+    /// Knows where this button is on the screen, so the pop-up can open right next to it.
+    @State private var anchor = ScreenAnchor()
+
+    var body: some View {
+        let side = iconSize + 2 * TaskbarLayout.buttonPadding
+        let running = controller.runningHiddenCount
+
+        Button {
+            controller.togglePopup(.hiddenApps, anchor: anchor.screenFrame)
+        } label: {
+            Image(systemName: controller.hiddenIconSymbolName)
+                .font(.system(size: iconSize * 0.58, weight: .medium))
+                .frame(width: side, height: side)
+                .background(
+                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                        .fill(controller.isHiddenAppsShown ? Color.primary.opacity(0.14) : Color.clear)
+                )
+                .overlay(alignment: .topTrailing) {
+                    if running > 0 {
+                        TaskbarCountBadge(count: running, iconSize: iconSize)
+                    }
+                }
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .background {
+            ScreenAnchorReader(anchor: anchor)
+                .allowsHitTesting(false)
+        }
+        .onDrop(of: [UTType.text], delegate: HideDropDelegate(controller: controller))
+        .help("Hidden apps. Click to show them. Drop an app here to hide it.")
+        .accessibilityLabel("Hidden apps")
+        .accessibilityValue(running == 1 ? "1 running" : "\(running) running")
+        .contextMenu {
+            Button(controller.isHiddenAppsShown ? "Close Hidden Apps" : "Show Hidden Apps") {
+                controller.togglePopup(.hiddenApps, anchor: anchor.screenFrame)
+            }
+            Button("Show All in Taskbar") { controller.showAllHiddenApps() }
+            Divider()
+            Button("App Icon Controls…") { controller.openSettings(.appIcons) }
+        }
+    }
+}
+
+/// A small number in the corner of a taskbar button.
+private struct TaskbarCountBadge: View {
+    let count: Int
+    let iconSize: CGFloat
+
+    var body: some View {
+        let height = max(12, iconSize * 0.4)
+        Text("\(count)")
+            .font(.system(size: height * 0.72, weight: .bold))
+            .monospacedDigit()
+            .foregroundStyle(.white)
+            .padding(.horizontal, height * 0.28)
+            .frame(minWidth: height, minHeight: height)
+            .background(Capsule().fill(Color.steadyAccent))
+            .offset(x: 2, y: -1)
+            .accessibilityHidden(true)
+    }
+}
+
+/// The button after the apps on a taskbar that is too short for all of them. It shows how many
+/// apps did not fit, for example "+31". Click it to open them in a pop-up.
+private struct MoreAppsButton: View {
+    let controller: TaskbarController
+    let displayID: UInt32
+    /// The apps that did not fit on this taskbar.
+    let apps: [TaskbarApp]
+    let iconSize: CGFloat
+    let isHorizontalBar: Bool
+
+    /// Knows where this button is on the screen, so the pop-up can open right next to it.
+    @State private var anchor = ScreenAnchor()
+
+    private var popup: TaskbarPopup { .moreApps(display: displayID) }
+
+    var body: some View {
+        let side = iconSize + 2 * TaskbarLayout.buttonPadding
+        let isOpen = controller.shownPopup == popup
+        // The app in front may be one of the apps that did not fit. The button then carries its marker.
+        let holdsActiveApp = apps.contains(where: \.isActive)
+
+        Button {
+            controller.togglePopup(popup, anchor: anchor.screenFrame)
+        } label: {
+            Text("+\(apps.count)")
+                .font(.system(size: max(10, iconSize * 0.4), weight: .semibold))
+                .monospacedDigit()
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+                .padding(.horizontal, 2)
+                .frame(
+                    width: isHorizontalBar ? TaskbarLayout.moreButtonLength(iconSize: iconSize, isHorizontal: true) : side,
+                    height: isHorizontalBar ? side : TaskbarLayout.moreButtonLength(iconSize: iconSize, isHorizontal: false)
+                )
+                .background(
+                    // Always lightly filled, so the number reads as a button. Darker when its
+                    // pop-up is open or the app in front is behind it.
+                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                        .fill(Color.primary.opacity(isOpen || holdsActiveApp ? 0.18 : 0.08))
+                )
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .background {
+            ScreenAnchorReader(anchor: anchor)
+                .allowsHitTesting(false)
+        }
+        .help(apps.count == 1 ? "1 more app. Click to show it." : "\(apps.count) more apps. Click to show them.")
+        .accessibilityLabel("More apps")
+        .accessibilityValue(apps.count == 1 ? "1 app" : "\(apps.count) apps")
+        .contextMenu {
+            Button(isOpen ? "Close More Apps" : "Show More Apps") {
+                controller.togglePopup(popup, anchor: anchor.screenFrame)
+            }
+            Divider()
+            Button("Taskbar & Dock Settings…") { controller.openSettings(.taskbar) }
+        }
+    }
+}
+
+/// Dropping a dragged app on the Hidden Apps button hides it.
+private struct HideDropDelegate: DropDelegate {
+    let controller: TaskbarController
+
+    func dropUpdated(info: DropInfo) -> DropProposal? {
+        DropProposal(operation: .move)
+    }
+
+    func performDrop(info: DropInfo) -> Bool {
+        withAnimation(.easeInOut(duration: 0.15)) {
+            _ = controller.setDraggedAppHidden(true)
+        }
+        controller.endDrag()
+        return true
+    }
+}
+
+/// Remembers the AppKit view behind a SwiftUI view, to find out where that view is on the screen.
+@MainActor
+final class ScreenAnchor {
+    fileprivate weak var view: NSView?
+
+    /// The view's frame in screen coordinates, or nil while it is not in a window.
+    var screenFrame: NSRect? {
+        guard let view, let window = view.window else { return nil }
+        return window.convertToScreen(view.convert(view.bounds, to: nil))
+    }
+}
+
+private struct ScreenAnchorReader: NSViewRepresentable {
+    let anchor: ScreenAnchor
+
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView()
+        anchor.view = view
+        return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        anchor.view = nsView
+    }
+}
+
+/// The pop-up that opens next to the Hidden Apps button or the More button. The apps in it behave
+/// exactly like apps on the taskbar: click to switch, drag to reorder or back onto the taskbar,
+/// right-click for the menu. Icons are the size chosen in the settings, with names underneath.
+struct TaskbarPopupView: View {
+    let controller: TaskbarController
+    let popup: TaskbarPopup
+
+    var body: some View {
+        let settings = controller.settings
+        let iconSize = CGFloat(settings.taskbarIconPoints)
+        let apps = controller.apps(in: popup)
+        // The More pop-up of a display with chosen apps reorders that display's own list.
+        let chosenDisplay: UInt32? = if case .moreApps(let display) = popup, controller.showsChosenApps(on: display) {
+            display
+        } else {
+            nil
+        }
+        let cell = TaskbarLayout.hiddenPopupCellSize(iconSize: iconSize)
+        let columns = Array(
+            repeating: GridItem(.fixed(cell.width), spacing: TaskbarLayout.hiddenPopupSpacing),
+            count: TaskbarLayout.hiddenPopupColumns(count: apps.count)
+        )
+        let radius = TaskbarLayout.roundedCornerRadius
+
+        LazyVGrid(columns: columns, spacing: TaskbarLayout.hiddenPopupSpacing) {
+            ForEach(apps) { app in
+                TaskbarAppCell(
+                    app: app,
+                    iconSize: iconSize,
+                    showName: true,
+                    namePosition: .below,
+                    nameSize: TaskbarLayout.hiddenPopupNameSize,
+                    isHorizontalBar: true,
+                    groups: settings.taskbarGroupingEnabled ? settings.taskbarGroups : [],
+                    stackedWidth: cell.width,
+                    chosenDisplay: chosenDisplay,
+                    controller: controller
+                )
+            }
+        }
+        .padding(TaskbarLayout.hiddenPopupPadding)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background {
+            if settings.taskbarGlassBackground {
+                TaskbarGlassBackground(cornerRadius: radius)
+            } else {
+                RoundedRectangle(cornerRadius: radius, style: .continuous)
+                    .fill(Color(nsColor: .windowBackgroundColor))
+            }
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: radius, style: .continuous)
+                .strokeBorder(Color(nsColor: .separatorColor), lineWidth: 1)
+                .allowsHitTesting(false)
+        }
     }
 }
 

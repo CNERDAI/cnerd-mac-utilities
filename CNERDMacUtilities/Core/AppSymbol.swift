@@ -15,6 +15,13 @@ enum AppSymbol {
     static let lock = "lock.shield"
     static let applications = "square.grid.3x3.fill"
     static let donate = "heart.fill"
+    static let pinned = "pin.fill"
+    static let unpinned = "pin"
+    static let dragHandle = "line.3.horizontal"
+    static let moveUp = "chevron.up"
+    static let moveDown = "chevron.down"
+    static let trash = "trash"
+    static let add = "plus"
 
-    static let all: [String] = [menuBar, warning, checkmark, info, remove, refresh, copy, display, folder, lock, applications, donate]
+    static let all: [String] = [menuBar, warning, checkmark, info, remove, refresh, copy, display, folder, lock, applications, donate, pinned, unpinned, dragHandle, moveUp, moveDown, trash, add]
 }

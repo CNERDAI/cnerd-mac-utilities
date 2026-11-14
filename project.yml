@@ -8,15 +8,15 @@ options:
     macOS: "14.0"
   createIntermediateGroups: true
 
+# Config/App.xcconfig brings in the version (Config/Version.xcconfig, changed with ./version.sh)
+# and the code signing settings.
 configFiles:
-  Debug: Config/Signing.xcconfig
-  Release: Config/Signing.xcconfig
+  Debug: Config/App.xcconfig
+  Release: Config/App.xcconfig
 
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    MARKETING_VERSION: "1.0.0"
-    CURRENT_PROJECT_VERSION: "1"
 
 targets:
   CNERDMacUtilities:
@@ -33,7 +33,7 @@ targets:
         LSApplicationCategoryType: public.app-category.utilities
         LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
         NSHumanReadableCopyright: "Copyright © 2026 CNERD AI. All rights reserved."
-        NSAppleEventsUsageDescription: "CNERD Mac Utilities asks Finder which files are selected so it can copy their paths, and changes Dock settings through System Events when you use the Dock switches."
+        NSAppleEventsUsageDescription: "CNERD Mac Utilities asks Finder which files are selected so it can copy their paths, asks Finder to empty the Trash when you choose Empty Trash, and changes Dock settings through System Events when you use the Dock switches."
         NSDesktopFolderUsageDescription: "CNERD Mac Utilities lists the files on your Desktop in the Desktop Manager. It never moves, renames, or deletes them."
     entitlements:
       path: Config/CNERDMacUtilities.entitlements

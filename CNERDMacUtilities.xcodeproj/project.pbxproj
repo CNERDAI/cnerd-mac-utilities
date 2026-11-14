@@ -7,11 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		01FD958956E54B8C16487BF6 /* TaskbarDisplays.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79FAE65730EC8873A7AC373 /* TaskbarDisplays.swift */; };
 		03D99366B2D85C5B9F50C42A /* ScreenGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F731325BAE4221476ED55778 /* ScreenGeometry.swift */; };
 		0955F85FF5FBD9CD76BF519F /* AppSymbol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253D2DDD1EB783E35D4C74B9 /* AppSymbol.swift */; };
 		0ADDCB849AD4AEBB28EB9343 /* AccessibilityWindowService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BE0012217EB9446A1A22D69 /* AccessibilityWindowService.swift */; };
 		127F1762F73B0D74D92B0FCA /* GeneralSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25819696621245BE6761785C /* GeneralSettingsView.swift */; };
 		158C761DDD0BFD2A7366239B /* SupportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CC8C9F6F9568E3E952EC99C /* SupportTests.swift */; };
+		1CF4FAD58886C28D42AEBE09 /* AppIconsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B41565F4A745F496D73680 /* AppIconsSettingsView.swift */; };
 		21FAA220F55A513F608D4389 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC8C7EB549CAAF811343F2B /* DashboardView.swift */; };
 		280CF15967A7D0CA29EAB40A /* QuickFolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A668E2DB44D4441707B5AB6 /* QuickFolder.swift */; };
 		29A696951C3AF4F0F4D0A832 /* SidebarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F576A672D4C85F37849D5CD5 /* SidebarItem.swift */; };
@@ -27,6 +29,7 @@
 		59AB0C3B16C1E1DCE0BF82A2 /* HotKeyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E4FCBE4903807A3951F22 /* HotKeyService.swift */; };
 		5CB8C5BE082B1EC4402D867C /* ScreenGeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62A8B941233EE07B1A785925 /* ScreenGeometryTests.swift */; };
 		62BC845476B7AE88ECB00ACE /* WindowManagerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4CD99A432B7C812E9D53C27 /* WindowManagerSettingsView.swift */; };
+		6A673346910BDCC9C1AB906C /* TaskbarGroups.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94FDE143DD319E25D2843E7C /* TaskbarGroups.swift */; };
 		779C4A89048AB9B955126EEA /* ShortcutAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6540830C092999531FE253D6 /* ShortcutAction.swift */; };
 		7B88DBF92C0A30806D108C3C /* MenuBarContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5F2302ACEBFCD6F4DDC651 /* MenuBarContent.swift */; };
 		7C8CF0E156F03A63D1F25643 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0062B3A162D09950814E38E /* AppInfo.swift */; };
@@ -45,10 +48,13 @@
 		B1E1089D0CF1534AFF292DD4 /* FinderSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 400F4977051965266AC58DAD /* FinderSettingsView.swift */; };
 		B2412B3CBE43676DFCAB0376 /* ModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94191225FD58D2AD780672D6 /* ModelTests.swift */; };
 		B490496B94B92F5E94CF4C7F /* LoginItemService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0A8A7DAFF29447F719137F /* LoginItemService.swift */; };
+		BB2F31B3002C62B204849F36 /* TaskbarFitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ACD33285A7EF4447D7D3A3A /* TaskbarFitTests.swift */; };
+		C399D9EDF8F166C1F922DAEE /* WindowLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 256ED421F1C6E804D261C939 /* WindowLocator.swift */; };
 		CA671229DB5FDD24F52D6FB0 /* WindowPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B4F4B9FB56D7BE0FCE4B927 /* WindowPosition.swift */; };
 		D6A183097BAEEB4F0AE9C557 /* TaskbarSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4A88CB9EBDF545CDE1D34AC /* TaskbarSettingsView.swift */; };
 		D92D4CB716D4373BE2DC6798 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEDFAA15452158B6A251AD99 /* AppSettings.swift */; };
 		DAF94D61D9E62E8C3A9567BD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BEE416BA10683A9E857DCD9E /* Assets.xcassets */; };
+		E7995E7E97D05EFF80DDDD65 /* TaskbarDisplayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CA7639351EE0B1A3BBC50C /* TaskbarDisplayTests.swift */; };
 		E9678352E480C5C70FDCE56B /* ShortcutRecorderRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F765B024ACA3CBEA01B9608 /* ShortcutRecorderRow.swift */; };
 		FBAEEA8B4D191024A67F0820 /* WindowManagerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BDB28D94A10C4F5B8F1BC68 /* WindowManagerController.swift */; };
 /* End PBXBuildFile section */
@@ -65,11 +71,12 @@
 
 /* Begin PBXFileReference section */
 		0B4F4B9FB56D7BE0FCE4B927 /* WindowPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowPosition.swift; sourceTree = "<group>"; };
+		1CF2259C90F4DC903D8B991F /* App.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = App.xcconfig; sourceTree = "<group>"; };
 		2433D41FF90154A38570EE5A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		253D2DDD1EB783E35D4C74B9 /* AppSymbol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSymbol.swift; sourceTree = "<group>"; };
+		256ED421F1C6E804D261C939 /* WindowLocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowLocator.swift; sourceTree = "<group>"; };
 		25819696621245BE6761785C /* GeneralSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingsView.swift; sourceTree = "<group>"; };
 		2B52E1B874DF067152096A8D /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
-		2DB601C9E092BCB13C2DC9CF /* Signing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>"; };
 		3F765B024ACA3CBEA01B9608 /* ShortcutRecorderRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutRecorderRow.swift; sourceTree = "<group>"; };
 		400F4977051965266AC58DAD /* FinderSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderSettingsView.swift; sourceTree = "<group>"; };
 		46A451985FAC79DB712DA201 /* CNERDMacUtilities.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CNERDMacUtilities.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -88,10 +95,13 @@
 		7CC8C9F6F9568E3E952EC99C /* SupportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportTests.swift; sourceTree = "<group>"; };
 		7D67757BE38CA4493143DF34 /* FinderController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderController.swift; sourceTree = "<group>"; };
 		8472B806FB0065E22E413673 /* TaskbarModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskbarModels.swift; sourceTree = "<group>"; };
+		8ACD33285A7EF4447D7D3A3A /* TaskbarFitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskbarFitTests.swift; sourceTree = "<group>"; };
 		94191225FD58D2AD780672D6 /* ModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelTests.swift; sourceTree = "<group>"; };
+		94FDE143DD319E25D2843E7C /* TaskbarGroups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskbarGroups.swift; sourceTree = "<group>"; };
 		9B4A772B10CE3C59C324B1D8 /* CNERDMacUtilitiesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CNERDMacUtilitiesApp.swift; sourceTree = "<group>"; };
 		9F4DB74DC933DD5B64CFD503 /* DockInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DockInfo.swift; sourceTree = "<group>"; };
 		A4A88CB9EBDF545CDE1D34AC /* TaskbarSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskbarSettingsView.swift; sourceTree = "<group>"; };
+		A79FAE65730EC8873A7AC373 /* TaskbarDisplays.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskbarDisplays.swift; sourceTree = "<group>"; };
 		ACC8C7EB549CAAF811343F2B /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		B00832B48EA43F1DFF0CAD7D /* TaskbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskbarView.swift; sourceTree = "<group>"; };
 		B1E6CD02D321C2EBA6197833 /* TaskbarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskbarController.swift; sourceTree = "<group>"; };
@@ -99,6 +109,8 @@
 		BEE416BA10683A9E857DCD9E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CBFAC1C77813DA9C19B6402D /* DesktopController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopController.swift; sourceTree = "<group>"; };
 		CEDFAA15452158B6A251AD99 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		D0B41565F4A745F496D73680 /* AppIconsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconsSettingsView.swift; sourceTree = "<group>"; };
+		D2CA7639351EE0B1A3BBC50C /* TaskbarDisplayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskbarDisplayTests.swift; sourceTree = "<group>"; };
 		D49FDCAFA29F4E78C7D5C98C /* GreenButtonInterceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GreenButtonInterceptor.swift; sourceTree = "<group>"; };
 		D4CD99A432B7C812E9D53C27 /* WindowManagerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManagerSettingsView.swift; sourceTree = "<group>"; };
 		E00CD9FA39C5E90E3A3397CF /* CNERDMacUtilitiesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CNERDMacUtilitiesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -132,6 +144,8 @@
 				94191225FD58D2AD780672D6 /* ModelTests.swift */,
 				62A8B941233EE07B1A785925 /* ScreenGeometryTests.swift */,
 				7CC8C9F6F9568E3E952EC99C /* SupportTests.swift */,
+				D2CA7639351EE0B1A3BBC50C /* TaskbarDisplayTests.swift */,
+				8ACD33285A7EF4447D7D3A3A /* TaskbarFitTests.swift */,
 			);
 			path = CNERDMacUtilitiesTests;
 			sourceTree = "<group>";
@@ -139,6 +153,7 @@
 		07FCA4CC5818716711506F9A /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				D0B41565F4A745F496D73680 /* AppIconsSettingsView.swift */,
 				5105B0CB8F16DA59BC470782 /* DesktopSettingsView.swift */,
 				400F4977051965266AC58DAD /* FinderSettingsView.swift */,
 				25819696621245BE6761785C /* GeneralSettingsView.swift */,
@@ -232,7 +247,7 @@
 		AB1626C6D78602107DF041D8 /* Config */ = {
 			isa = PBXGroup;
 			children = (
-				2DB601C9E092BCB13C2DC9CF /* Signing.xcconfig */,
+				1CF2259C90F4DC903D8B991F /* App.xcconfig */,
 			);
 			path = Config;
 			sourceTree = "<group>";
@@ -272,6 +287,7 @@
 				669E4FCBE4903807A3951F22 /* HotKeyService.swift */,
 				FE0A8A7DAFF29447F719137F /* LoginItemService.swift */,
 				F06BAB60F2C7F68346E34C80 /* PermissionsService.swift */,
+				256ED421F1C6E804D261C939 /* WindowLocator.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -301,6 +317,8 @@
 				BB07098A44522D5F64D7D5BB /* KeyCombo.swift */,
 				4A668E2DB44D4441707B5AB6 /* QuickFolder.swift */,
 				6540830C092999531FE253D6 /* ShortcutAction.swift */,
+				A79FAE65730EC8873A7AC373 /* TaskbarDisplays.swift */,
+				94FDE143DD319E25D2843E7C /* TaskbarGroups.swift */,
 				8472B806FB0065E22E413673 /* TaskbarModels.swift */,
 				0B4F4B9FB56D7BE0FCE4B927 /* WindowPosition.swift */,
 			);
@@ -424,6 +442,8 @@
 				B2412B3CBE43676DFCAB0376 /* ModelTests.swift in Sources */,
 				5CB8C5BE082B1EC4402D867C /* ScreenGeometryTests.swift in Sources */,
 				158C761DDD0BFD2A7366239B /* SupportTests.swift in Sources */,
+				E7995E7E97D05EFF80DDDD65 /* TaskbarDisplayTests.swift in Sources */,
+				BB2F31B3002C62B204849F36 /* TaskbarFitTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -434,6 +454,7 @@
 				0ADDCB849AD4AEBB28EB9343 /* AccessibilityWindowService.swift in Sources */,
 				93540F543AF8B8478B13DBB0 /* AppDelegate.swift in Sources */,
 				304F0200D43BFC8FE3AA9441 /* AppEnvironment.swift in Sources */,
+				1CF4FAD58886C28D42AEBE09 /* AppIconsSettingsView.swift in Sources */,
 				7C8CF0E156F03A63D1F25643 /* AppInfo.swift in Sources */,
 				D92D4CB716D4373BE2DC6798 /* AppSettings.swift in Sources */,
 				0955F85FF5FBD9CD76BF519F /* AppSymbol.swift in Sources */,
@@ -462,12 +483,15 @@
 				E9678352E480C5C70FDCE56B /* ShortcutRecorderRow.swift in Sources */,
 				29A696951C3AF4F0F4D0A832 /* SidebarItem.swift in Sources */,
 				81FADFD5F99E2A6052D0C85D /* TaskbarController.swift in Sources */,
+				01FD958956E54B8C16487BF6 /* TaskbarDisplays.swift in Sources */,
+				6A673346910BDCC9C1AB906C /* TaskbarGroups.swift in Sources */,
 				99AAD7BF3D9307236889EBF2 /* TaskbarModels.swift in Sources */,
 				33CE3B42D582325DF3ABD7F0 /* TaskbarPanel.swift in Sources */,
 				D6A183097BAEEB4F0AE9C557 /* TaskbarSettingsView.swift in Sources */,
 				ABED1B643B382F3321584FAC /* TaskbarView.swift in Sources */,
 				4A35D3042B96ACBCF8C746A1 /* UtilityModule.swift in Sources */,
 				579C239874669C2439D3FAC7 /* WindowFrameStore.swift in Sources */,
+				C399D9EDF8F166C1F922DAEE /* WindowLocator.swift in Sources */,
 				FBAEEA8B4D191024A67F0820 /* WindowManagerController.swift in Sources */,
 				62BC845476B7AE88ECB00ACE /* WindowManagerSettingsView.swift in Sources */,
 				CA671229DB5FDD24F52D6FB0 /* WindowPosition.swift in Sources */,
@@ -544,7 +568,7 @@
 		};
 		CA6F95CC7857A136CF32B0FF /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2DB601C9E092BCB13C2DC9CF /* Signing.xcconfig */;
+			baseConfigurationReference = 1CF2259C90F4DC903D8B991F /* App.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -577,7 +601,6 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -590,7 +613,6 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -603,7 +625,7 @@
 		};
 		F0DF70B5A48520B4275CE216 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2DB601C9E092BCB13C2DC9CF /* Signing.xcconfig */;
+			baseConfigurationReference = 1CF2259C90F4DC903D8B991F /* App.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -636,7 +658,6 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -655,7 +676,6 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

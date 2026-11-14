@@ -24,7 +24,11 @@ struct MenuBarContent: View {
         }
         .disabled(!environment.settings.finderEnabled)
 
-        Toggle("Show Taskbar", isOn: $settings.taskbarEnabled)
+        // One switch between this app's taskbar and the Apple Dock. This is the way back to the
+        // taskbar while the Apple Dock is in use.
+        Button(environment.taskbar.barMode.switchTitle) {
+            environment.taskbar.toggleBar()
+        }
 
         Divider()
 

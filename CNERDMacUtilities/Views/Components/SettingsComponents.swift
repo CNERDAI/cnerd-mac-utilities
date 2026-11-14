@@ -48,6 +48,7 @@ struct SettingsPage<Content: View>: View {
             content
         }
         .formStyle(.grouped)
+        .toggleStyle(ClearSwitchToggleStyle())
         .navigationTitle(item.title)
     }
 }
@@ -67,6 +68,83 @@ struct SettingLabel: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
+    }
+}
+
+extension Color {
+    /// The system accent color, the same in front and background windows.
+    /// SwiftUI's `Color.accentColor` turns gray in any window that is not in front, and the taskbar
+    /// is never the front window, so anything that has to stay readable there uses this instead.
+    static var steadyAccent: Color { Color(nsColor: .controlAccentColor) }
+}
+
+/// A switch that shows on and off clearly even when the window is in the background.
+///
+/// macOS draws its own switches gray in every window that is not in front. This app's window is
+/// often behind another app while its settings are being tried out, and then on and off looked
+/// almost the same. This switch has the same shape and keeps its color.
+struct ClearSwitchToggleStyle: ToggleStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        ClearSwitchRow(configuration: configuration)
+    }
+}
+
+private struct ClearSwitchRow: View {
+    let configuration: ToggleStyleConfiguration
+
+    @Environment(\.isEnabled) private var isEnabled
+    @FocusState private var isFocused: Bool
+
+    private static let trackSize = CGSize(width: 38, height: 20)
+    private static let knobSize = CGSize(width: 22, height: 16)
+
+    var body: some View {
+        LabeledContent {
+            track
+                .contentShape(Capsule())
+                .onTapGesture { toggle() }
+                // Reachable with the Tab key when keyboard navigation is on in macOS, like any switch.
+                .focusable(interactions: .activate)
+                .focused($isFocused)
+                .focusEffectDisabled()
+                .onKeyPress(.space) {
+                    toggle()
+                    return .handled
+                }
+        } label: {
+            configuration.label
+        }
+        // VoiceOver and other assistive tools see one switch per row, named by its label.
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isToggle)
+        .accessibilityValue(configuration.isOn ? "On" : "Off")
+        .accessibilityAction { toggle() }
+    }
+
+    private func toggle() {
+        guard isEnabled else { return }
+        configuration.isOn.toggle()
+    }
+
+    private var track: some View {
+        let isOn = configuration.isOn
+        return Capsule()
+            .fill(isOn ? Color.steadyAccent : Color.primary.opacity(0.2))
+            .frame(width: Self.trackSize.width, height: Self.trackSize.height)
+            .overlay(alignment: isOn ? .trailing : .leading) {
+                Capsule()
+                    .fill(Color.white)
+                    .frame(width: Self.knobSize.width, height: Self.knobSize.height)
+                    .shadow(color: .black.opacity(0.25), radius: 1, y: 0.5)
+                    .padding(2)
+            }
+            .overlay {
+                if isFocused {
+                    Capsule().strokeBorder(Color.steadyAccent.opacity(0.6), lineWidth: 3).padding(-4)
+                }
+            }
+            .animation(.easeInOut(duration: 0.15), value: isOn)
+            .opacity(isEnabled ? 1 : 0.45)
     }
 }
 

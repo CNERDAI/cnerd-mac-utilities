@@ -11,6 +11,21 @@ struct TaskbarSettingsView: View {
 
         SettingsPage(.taskbar) {
             Section {
+                Picker(selection: Binding(
+                    get: { taskbar.barMode },
+                    set: { taskbar.switchBar(to: $0) }
+                )) {
+                    ForEach(BarMode.allCases) { mode in
+                        Text(mode.title).tag(mode)
+                    }
+                } label: {
+                    SettingLabel(
+                        title: "Bar in Use",
+                        description: "Apple Dock hides the taskbar and brings the Dock back. Taskbar puts everything back the way it was. You can also switch from the menu bar icon, or by right-clicking this app's Dock icon or the taskbar's Applications button."
+                    )
+                }
+                .pickerStyle(.segmented)
+
                 SettingToggle(
                     title: "Show Taskbar",
                     description: "Adds a bar along one edge of the screen with your apps. Click an app to open it or bring it forward. Click the app in front to hide it.",
@@ -49,6 +64,18 @@ struct TaskbarSettingsView: View {
             } label: {
                 SettingLabel(title: "Show On", description: "The main display is the one with the menu bar.")
             }
+
+            Picker(selection: $settings.taskbarAppScope) {
+                ForEach(TaskbarAppScope.allCases) { scope in
+                    Text(scope.title).tag(scope)
+                }
+            } label: {
+                SettingLabel(
+                    title: "Show Apps On",
+                    description: "With a taskbar on more than one display, each taskbar can show only the apps that have a window on its display. An app with no window showing stays where it was last seen. Apps that are not open show on the main taskbar."
+                )
+            }
+            .disabled(settings.taskbarDisplayMode == .mainDisplayOnly)
 
             Picker(selection: $settings.taskbarPosition) {
                 ForEach(TaskbarPosition.allCases) { position in
@@ -99,13 +126,7 @@ struct TaskbarSettingsView: View {
     private func appsSection(settings: AppSettings) -> some View {
         @Bindable var settings = settings
         return Section {
-            Picker(selection: $settings.taskbarIconSize) {
-                ForEach(TaskbarIconSize.allCases) { size in
-                    Text(size.title).tag(size)
-                }
-            } label: {
-                SettingLabel(title: "Icon Size", description: "The size of app icons on the taskbar.")
-            }
+            TaskbarIconSizeRow(settings: settings)
 
             SettingToggle(
                 title: "Show App Names",
@@ -133,13 +154,13 @@ struct TaskbarSettingsView: View {
 
             SettingToggle(
                 title: "Show Trash",
-                description: "Adds the Trash at the end of the taskbar. Click it to open the Trash in Finder.",
+                description: "Adds the Trash at the end of the taskbar. Click it to open the Trash in Finder. Right-click it to empty the Trash or eject a disk.",
                 isOn: $settings.taskbarShowTrash
             )
         } header: {
             Text("Apps on the Taskbar")
         } footer: {
-            Text("Drag an app along the taskbar to move it. The order is saved. Right-click an app for Keep in Taskbar, Show All Windows, Show in Finder, Hide, and Quit.")
+            Text("When the apps do not fit on a taskbar, their names are hidden first and then the icons get smaller. Apps that still do not fit go behind a More button at the end of the apps. Drag an app along the taskbar to move it. The order is saved. Right-click an app for Keep in Taskbar, Show All Windows, Show in Finder, Hide, and Quit. Groups and the order of apps are in App Icon Controls. Right-click the Applications button at the start of the taskbar to come back to this screen.")
         }
         .disabled(!settings.taskbarEnabled)
     }

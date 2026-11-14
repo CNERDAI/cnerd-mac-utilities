@@ -1,0 +1,3 @@
+// Build settings for every configuration: the version first, then code signing.
+#include "Version.xcconfig"
+#include "Signing.xcconfig"

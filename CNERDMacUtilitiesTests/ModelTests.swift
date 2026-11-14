@@ -84,6 +84,7 @@ final class SymbolTests: XCTestCase {
             + SidebarItem.allCases.map(\.symbolName)
             + WindowPosition.allCases.map(\.symbolName)
             + QuickFolder.standard.map(\.symbolName)
+            + HiddenAppsIcon.allCases.map(\.symbolName)
         for name in names {
             XCTAssertNotNil(NSImage(systemSymbolName: name, accessibilityDescription: nil), "Missing SF Symbol: \(name)")
         }
@@ -207,17 +208,17 @@ final class TaskbarLayoutTests: XCTestCase {
 
         let first = AppSettings(defaults: defaults)
         XCTAssertEqual(first.taskbarPosition, .bottom)
-        XCTAssertEqual(first.taskbarIconSize, .medium)
+        XCTAssertEqual(first.taskbarIconPoints, 26)
         XCTAssertEqual(first.taskbarNamePosition, .right)
         XCTAssertTrue(first.taskbarGlassBackground)
         first.taskbarPosition = .left
-        first.taskbarIconSize = .large
+        first.taskbarIconPoints = 41
         first.taskbarNamePosition = .below
         first.taskbarGlassBackground = false
 
         let second = AppSettings(defaults: defaults)
         XCTAssertEqual(second.taskbarPosition, .left)
-        XCTAssertEqual(second.taskbarIconSize, .large)
+        XCTAssertEqual(second.taskbarIconPoints, 41)
         XCTAssertEqual(second.taskbarNamePosition, .below)
         XCTAssertFalse(second.taskbarGlassBackground)
     }
@@ -296,5 +297,243 @@ final class TaskbarOrderingTests: XCTestCase {
         XCTAssertEqual(second.taskbarAppOrder, ["com.apple.finder", "com.apple.Safari"])
         XCTAssertEqual(second.taskbarCornerStyle, .rounded)
         XCTAssertEqual(second.taskbarNameSize, .extraSmall)
+    }
+}
+
+final class TaskbarIconScaleTests: XCTestCase {
+    func testSizeStaysInsideTheSliderRange() {
+        XCTAssertEqual(TaskbarIconScale.clamped(5), 16)
+        XCTAssertEqual(TaskbarIconScale.clamped(500), 72)
+        XCTAssertEqual(TaskbarIconScale.clamped(33.6), 34)
+    }
+
+    /// Version 1.0 stored small, medium, or large. The slider starts at the size that choice had.
+    @MainActor
+    func testOldSizeChoiceCarriesOver() {
+        XCTAssertEqual(TaskbarIconScale.points(forLegacySize: "small"), 20)
+        XCTAssertEqual(TaskbarIconScale.points(forLegacySize: "medium"), 26)
+        XCTAssertEqual(TaskbarIconScale.points(forLegacySize: "large"), 34)
+        XCTAssertEqual(TaskbarIconScale.points(forLegacySize: nil), 26)
+
+        let suite = "ai.cnerd.MacUtilities.tests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        defaults.set("large", forKey: AppSettings.Key.taskbarIconSize.rawValue)
+        XCTAssertEqual(AppSettings(defaults: defaults).taskbarIconPoints, 34)
+    }
+}
+
+final class AppTopicTests: XCTestCase {
+    func testWellKnownAppsAreSortedByBundleIdentifier() {
+        func topic(_ id: String, _ category: String? = nil) -> AppTopic {
+            AppTopicClassifier.topic(bundleID: id, category: category)
+        }
+        XCTAssertEqual(topic("com.openai.chat"), .aiTools)
+        XCTAssertEqual(topic("com.anthropic.claudefordesktop"), .aiTools)
+        XCTAssertEqual(topic("com.google.Chrome", "public.app-category.productivity"), .browsers)
+        XCTAssertEqual(topic("com.apple.Safari"), .browsers)
+        XCTAssertEqual(topic("com.microsoft.Outlook", "public.app-category.productivity"), .communication)
+        XCTAssertEqual(topic("com.microsoft.teams2"), .communication)
+        XCTAssertEqual(topic("com.apple.Terminal", "public.app-category.utilities"), .developer)
+        XCTAssertEqual(topic("com.apple.finder"), .utilities)
+        XCTAssertEqual(topic("com.autodesk.fusion360"), .creative)
+    }
+
+    func testOtherAppsFollowTheCategoryTheyDeclare() {
+        XCTAssertEqual(AppTopicClassifier.topic(bundleID: "com.example.editor", category: "public.app-category.developer-tools"), .developer)
+        XCTAssertEqual(AppTopicClassifier.topic(bundleID: "com.example.chess", category: "public.app-category.board-games"), .games)
+        XCTAssertEqual(AppTopicClassifier.topic(bundleID: "com.example.paint", category: "public.app-category.graphics-design"), .creative)
+        XCTAssertEqual(AppTopicClassifier.topic(bundleID: "com.example.unknown", category: nil), .other)
+        XCTAssertEqual(AppTopicClassifier.topic(bundleID: "com.example.unknown", category: "public.app-category.weather"), .other)
+    }
+
+    func testEveryTopicHasItsOwnGroup() {
+        XCTAssertEqual(Set(AppTopic.allCases.map(\.groupID)).count, AppTopic.allCases.count)
+        XCTAssertEqual(AppTopic.allCases.last, .other)
+    }
+}
+
+final class TaskbarGroupingTests: XCTestCase {
+    private let groups = [
+        TaskbarGroup(id: "g1", name: "One", appIDs: ["a", "b", "c"]),
+        TaskbarGroup(id: "g2", name: "Two", appIDs: ["d"]),
+        TaskbarGroup(id: "g3", name: "Three", appIDs: []),
+    ]
+
+    private func topic(_ id: String) -> AppTopic {
+        switch id.first {
+        case "b": .browsers
+        case "m": .communication
+        default: .other
+        }
+    }
+
+    func testSortingByTopicKeepsTopicOrderAndAppOrder() {
+        let sorted = TaskbarGrouping.byTopic(["x1", "m1", "b1", "x2", "b2", "pid:9", "b1"], topic: topic)
+        XCTAssertEqual(sorted.map(\.id), [AppTopic.browsers.groupID, AppTopic.communication.groupID, AppTopic.other.groupID])
+        XCTAssertEqual(sorted.map(\.appIDs), [["b1", "b2"], ["m1"], ["x1", "x2"]])
+        XCTAssertEqual(sorted.first?.name, "Browsers")
+    }
+
+    func testNewAppsJoinTheirTopicGroup() {
+        var sorted = TaskbarGrouping.byTopic(["b1", "x1"], topic: topic)
+        sorted[0].name = "Web"
+        // b2 finds the renamed Browsers group. m1 gets a new group, placed ahead of Other.
+        let added = TaskbarGrouping.adding(["b1", "b2", "m1", "pid:4"], to: sorted, topic: topic)
+        XCTAssertEqual(added.map(\.name), ["Web", "Communication", "Other"])
+        XCTAssertEqual(added.map(\.appIDs), [["b1", "b2"], ["m1"], ["x1"]])
+        XCTAssertEqual(TaskbarGrouping.adding(["b1", "x1"], to: added, topic: topic), added)
+    }
+
+    func testNewAppsWaitInOtherWhenSortingIsOff() {
+        let added = TaskbarGrouping.adding(["e", "a"], to: groups) { _ in .other }
+        XCTAssertEqual(added.count, 4)
+        XCTAssertEqual(added.last?.id, AppTopic.other.groupID)
+        XCTAssertEqual(added.last?.appIDs, ["e"])
+    }
+
+    func testDraggingAnAppWithinAndAcrossGroups() {
+        XCTAssertEqual(TaskbarGrouping.placing("c", before: true, target: "a", in: groups)[0].appIDs, ["c", "a", "b"])
+        let across = TaskbarGrouping.placing("a", before: false, target: "d", in: groups)
+        XCTAssertEqual(across.map(\.appIDs), [["b", "c"], ["d", "a"], []])
+        // Repeating the same step changes nothing, and unknown apps are ignored.
+        XCTAssertEqual(TaskbarGrouping.placing("a", before: false, target: "d", in: across), across)
+        XCTAssertEqual(TaskbarGrouping.placing("zzz", before: true, target: "a", in: groups), groups)
+        XCTAssertEqual(TaskbarGrouping.placing("a", before: true, target: "zzz", in: groups), groups)
+        XCTAssertEqual(TaskbarGrouping.order(of: across), ["b", "c", "d", "a"])
+    }
+
+    func testMovingAnAppToAGroup() {
+        XCTAssertEqual(TaskbarGrouping.moving("a", toGroup: "g3", in: groups).map(\.appIDs), [["b", "c"], ["d"], ["a"]])
+        // Already in the group: it keeps its spot. A new app is simply added.
+        XCTAssertEqual(TaskbarGrouping.moving("a", toGroup: "g1", in: groups), groups)
+        XCTAssertEqual(TaskbarGrouping.moving("new", toGroup: "g2", in: groups)[1].appIDs, ["d", "new"])
+        XCTAssertEqual(TaskbarGrouping.moving("pid:7", toGroup: "g2", in: groups), groups)
+    }
+
+    func testMovingGroups() {
+        XCTAssertEqual(TaskbarGrouping.placingGroup("g1", at: "g3", in: groups).map(\.id), ["g2", "g3", "g1"])
+        XCTAssertEqual(TaskbarGrouping.placingGroup("g3", at: "g1", in: groups).map(\.id), ["g3", "g1", "g2"])
+        XCTAssertEqual(TaskbarGrouping.placingGroup("g1", at: "g1", in: groups), groups)
+        XCTAssertEqual(TaskbarGrouping.shiftingGroup("g2", by: -1, in: groups).map(\.id), ["g2", "g1", "g3"])
+        XCTAssertEqual(TaskbarGrouping.shiftingGroup("g2", by: 1, in: groups).map(\.id), ["g1", "g3", "g2"])
+        XCTAssertEqual(TaskbarGrouping.shiftingGroup("g1", by: -1, in: groups), groups)
+        XCTAssertEqual(TaskbarGrouping.shiftingGroup("g3", by: 1, in: groups), groups)
+    }
+
+    func testDeletingAGroupMovesItsAppsToOther() {
+        let removed = TaskbarGrouping.removingGroup("g1", from: groups)
+        XCTAssertEqual(removed.map(\.id), ["g2", "g3", AppTopic.other.groupID])
+        XCTAssertEqual(removed.last?.appIDs, ["a", "b", "c"])
+        XCTAssertEqual(TaskbarGrouping.removingGroup("g3", from: groups).map(\.id), ["g1", "g2"])
+        // Other cannot be deleted while it holds apps.
+        XCTAssertFalse(TaskbarGrouping.canRemoveGroup(AppTopic.other.groupID, from: removed))
+        XCTAssertEqual(TaskbarGrouping.removingGroup(AppTopic.other.groupID, from: removed), removed)
+    }
+
+    func testNewGroupNamesAreUnique() {
+        XCTAssertEqual(TaskbarGrouping.uniqueName("New Group", in: groups), "New Group")
+        let named = groups + [TaskbarGroup(name: "New Group"), TaskbarGroup(name: "New Group 2")]
+        XCTAssertEqual(TaskbarGrouping.uniqueName("New Group", in: named), "New Group 3")
+    }
+
+    @MainActor
+    func testGroupSettingsPersist() {
+        let suite = "ai.cnerd.MacUtilities.tests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+
+        let first = AppSettings(defaults: defaults)
+        XCTAssertFalse(first.taskbarGroupingEnabled, "Grouping must be opt-in")
+        XCTAssertTrue(first.taskbarAutoGroupNewApps)
+        XCTAssertEqual(first.taskbarGroups, [])
+        first.taskbarGroupingEnabled = true
+        first.taskbarAutoGroupNewApps = false
+        first.taskbarGroups = groups
+
+        let second = AppSettings(defaults: defaults)
+        XCTAssertTrue(second.taskbarGroupingEnabled)
+        XCTAssertFalse(second.taskbarAutoGroupNewApps)
+        XCTAssertEqual(second.taskbarGroups, groups)
+    }
+}
+
+final class HiddenAppsTests: XCTestCase {
+    func testDraggingIntoAndInsideTheHiddenList() {
+        // An app dropped next to a hidden app joins the hidden list at that spot.
+        XCTAssertEqual(TaskbarOrdering.placingHidden("new", before: true, target: "b", in: ["a", "b"]), ["a", "new", "b"])
+        XCTAssertEqual(TaskbarOrdering.placingHidden("new", before: false, target: "b", in: ["a", "b"]), ["a", "b", "new"])
+        XCTAssertEqual(TaskbarOrdering.placingHidden("b", before: true, target: "a", in: ["a", "b"]), ["b", "a"])
+        // Apps without a bundle identifier cannot be hidden, and the target must be hidden.
+        XCTAssertEqual(TaskbarOrdering.placingHidden("pid:5", before: true, target: "a", in: ["a"]), ["a"])
+        XCTAssertEqual(TaskbarOrdering.placingHidden("new", before: true, target: "zzz", in: ["a"]), ["a"])
+    }
+
+    func testPopUpGrowsFiveAppsWide() {
+        let cell = TaskbarLayout.hiddenPopupCellSize(iconSize: 34)
+        let one = TaskbarLayout.hiddenPopupSize(count: 1, iconSize: 34)
+        let five = TaskbarLayout.hiddenPopupSize(count: 5, iconSize: 34)
+        let six = TaskbarLayout.hiddenPopupSize(count: 6, iconSize: 34)
+        XCTAssertEqual(one.width, cell.width + 2 * TaskbarLayout.hiddenPopupPadding)
+        XCTAssertEqual(five.height, one.height)
+        XCTAssertGreaterThan(five.width, one.width)
+        // The sixth app starts a second row.
+        XCTAssertEqual(six.width, five.width)
+        XCTAssertEqual(six.height, 2 * cell.height + TaskbarLayout.hiddenPopupSpacing + 2 * TaskbarLayout.hiddenPopupPadding)
+        XCTAssertEqual(TaskbarLayout.hiddenPopupSize(count: 0, iconSize: 34), one)
+    }
+
+    func testPopUpSitsNextToTheTaskbarAndStaysOnScreen() {
+        let screen = CGRect(x: 0, y: 0, width: 1500, height: 900)
+        let size = CGSize(width: 200, height: 80)
+        let gap = TaskbarLayout.hiddenPopupGap
+
+        // Bottom taskbar: above the bar, centered on the button.
+        let bottomBar = CGRect(x: 6, y: 6, width: 1488, height: 52)
+        let middle = CGRect(x: 700, y: 11, width: 42, height: 42)
+        let above = TaskbarLayout.hiddenPopupFrame(size: size, anchor: middle, bar: bottomBar, screen: screen, position: .bottom)
+        XCTAssertEqual(above, CGRect(x: 621, y: 58 + gap, width: 200, height: 80))
+
+        // A button at the far right: the pop-up is pushed back onto the screen.
+        let farRight = CGRect(x: 1440, y: 11, width: 42, height: 42)
+        let pushed = TaskbarLayout.hiddenPopupFrame(size: size, anchor: farRight, bar: bottomBar, screen: screen, position: .bottom)
+        XCTAssertEqual(pushed.maxX, screen.maxX - gap)
+
+        // Top taskbar: below the bar. Side taskbars: beside the bar.
+        let topBar = CGRect(x: 0, y: 848, width: 1500, height: 52)
+        let below = TaskbarLayout.hiddenPopupFrame(size: size, anchor: CGRect(x: 700, y: 853, width: 42, height: 42), bar: topBar, screen: screen, position: .top)
+        XCTAssertEqual(below.maxY, topBar.minY - gap)
+        let leftBar = CGRect(x: 0, y: 0, width: 52, height: 900)
+        let beside = TaskbarLayout.hiddenPopupFrame(size: size, anchor: CGRect(x: 5, y: 20, width: 42, height: 42), bar: leftBar, screen: screen, position: .left)
+        XCTAssertEqual(beside.minX, leftBar.maxX + gap)
+        XCTAssertEqual(beside.minY, screen.minY + gap)
+        let rightBar = CGRect(x: 1448, y: 0, width: 52, height: 900)
+        let other = TaskbarLayout.hiddenPopupFrame(size: size, anchor: CGRect(x: 1453, y: 400, width: 42, height: 42), bar: rightBar, screen: screen, position: .right)
+        XCTAssertEqual(other.maxX, rightBar.minX - gap)
+    }
+
+    func testBarSwitchTitlesNameTheOtherBar() {
+        XCTAssertEqual(BarMode.taskbar.switchTitle, "Switch to Apple Dock")
+        XCTAssertEqual(BarMode.appleDock.switchTitle, "Switch to Taskbar")
+    }
+
+    @MainActor
+    func testHiddenAppSettingsPersist() {
+        let suite = "ai.cnerd.MacUtilities.tests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+
+        let first = AppSettings(defaults: defaults)
+        XCTAssertEqual(first.taskbarHiddenApps, [])
+        XCTAssertEqual(first.taskbarHiddenIcon, .sunglasses)
+        XCTAssertFalse(first.taskbarTurnsDockOff)
+        first.taskbarHiddenApps = ["com.apple.Notes", "com.apple.iCal"]
+        first.taskbarHiddenIcon = .stack
+        first.taskbarTurnsDockOff = true
+
+        let second = AppSettings(defaults: defaults)
+        XCTAssertEqual(second.taskbarHiddenApps, ["com.apple.Notes", "com.apple.iCal"])
+        XCTAssertEqual(second.taskbarHiddenIcon, .stack)
+        XCTAssertTrue(second.taskbarTurnsDockOff)
     }
 }
