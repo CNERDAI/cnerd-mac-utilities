@@ -73,12 +73,15 @@ private struct TaskbarBar: View {
             delegate: ChosenDisplayDropDelegate(displayID: displayID, controller: controller)
         )
         // On a bar without its Applications button, a right-click on an empty part of the bar
-        // opens the settings, so they stay within reach. Other bars get no menu there.
+        // gives that button's menu, so the settings and the switch to the Apple Dock stay
+        // within reach. Other bars get no menu there.
         .taskbarMenu(edge: position) {
             guard !content.showsButtons else { return [] }
             return [
-                .button("App Icon Controls…") { controller.openSettings(.appIcons) },
                 .button("Taskbar & Dock Settings…") { controller.openSettings(.taskbar) },
+                .button("App Icon Controls…") { controller.openSettings(.appIcons) },
+                .divider,
+                .button(BarMode.taskbar.switchTitle) { controller.switchBar(to: .appleDock) },
             ]
         }
         .background { background }

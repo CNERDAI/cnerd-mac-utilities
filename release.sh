@@ -60,7 +60,6 @@ ln -sfn /Applications "$STAGE/Applications"
 hdiutil create -volname "$APP_NAME" -srcfolder "$STAGE" -ov -format UDZO "$DMG" >> "$LOG" 2>&1
 codesign --sign "$SIGN_IDENTITY" --timestamp "$DMG" >> "$LOG" 2>&1
 say "Installer: $DMG ($(du -h "$DMG" | cut -f1 | tr -d ' '))"
-shasum -a 256 "$DMG" | tee "$DMG.sha256" >> "$LOG"
 
 if [ -n "$NOTARY_PROFILE" ]; then
   say "Sending to Apple for notarization (this can take a few minutes)"
@@ -71,4 +70,7 @@ if [ -n "$NOTARY_PROFILE" ]; then
 else
   say "NOT notarized. Set NOTARY_PROFILE to send it to Apple. Without that, macOS will block it on other Macs."
 fi
+# The checksum is taken last, because stapling the notarization ticket changes the file.
+shasum -a 256 "$DMG" | tee "$DMG.sha256" >> "$LOG"
+say "SHA-256: $(cut -d' ' -f1 "$DMG.sha256")"
 say "DONE"

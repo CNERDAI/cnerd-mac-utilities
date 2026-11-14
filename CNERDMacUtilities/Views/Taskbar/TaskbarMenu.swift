@@ -69,31 +69,69 @@ private final class ClosureMenuItem: NSMenuItem {
     }
 }
 
-/// Marks the part of a taskbar that a right-click menu belongs to. It draws nothing and takes no
-/// clicks. `TaskbarPanel` looks these up when a right-click arrives.
-final class TaskbarMenuRegionView: NSView {
-    var items: (@MainActor () -> [TaskbarMenuItem])?
-    /// The edge the taskbar is on, so the menu opens beside the bar. Nil inside a pop-up, where
-    /// the menu opens at the pointer.
-    var edge: TaskbarPosition?
+/// Where the right-click menus of one taskbar window are. Each part of the bar that has a menu
+/// reports its frame here, measured by SwiftUI in the window's own coordinate space (origin at
+/// the top left, y growing downward). `TaskbarPanel` looks a right-click up in this list.
+@MainActor
+@Observable
+final class TaskbarMenuRegistry {
+    struct Region {
+        var frame: CGRect
+        /// The edge the taskbar is on, so the menu opens beside the bar. Nil inside a pop-up,
+        /// where the menu opens at the pointer.
+        var edge: TaskbarPosition?
+        var items: @MainActor () -> [TaskbarMenuItem]
+    }
 
-    override func hitTest(_ point: NSPoint) -> NSView? { nil }
+    /// The name of the coordinate space the frames are measured in. `TaskbarPanel` sets it on its root view.
+    static let space = "taskbarPanel"
+
+    @ObservationIgnored private var regions: [UUID: Region] = [:]
+
+    func set(_ id: UUID, frame: CGRect, edge: TaskbarPosition?, items: @escaping @MainActor () -> [TaskbarMenuItem]) {
+        regions[id] = Region(frame: frame, edge: edge, items: items)
+    }
+
+    /// Keeps the menu of a region current when its view is drawn again without moving.
+    func refresh(_ id: UUID, edge: TaskbarPosition?, items: @escaping @MainActor () -> [TaskbarMenuItem]) {
+        guard let frame = regions[id]?.frame else { return }
+        regions[id] = Region(frame: frame, edge: edge, items: items)
+    }
+
+    func remove(_ id: UUID) {
+        regions[id] = nil
+    }
+
+    /// The regions under a point, smallest first: an app before the bar it sits on.
+    func regions(at point: CGPoint) -> [Region] {
+        regions.values
+            .filter { $0.frame.contains(point) }
+            .sorted { $0.frame.width * $0.frame.height < $1.frame.width * $1.frame.height }
+    }
 }
 
-private struct TaskbarMenuRegion: NSViewRepresentable {
+/// Reports where a view is to the taskbar window's `TaskbarMenuRegistry`, with its menu.
+private struct TaskbarMenuModifier: ViewModifier {
     let edge: TaskbarPosition?
     let items: @MainActor () -> [TaskbarMenuItem]
 
-    func makeNSView(context: Context) -> TaskbarMenuRegionView {
-        let view = TaskbarMenuRegionView()
-        view.edge = edge
-        view.items = items
-        return view
-    }
+    @Environment(TaskbarMenuRegistry.self) private var registry: TaskbarMenuRegistry?
+    @State private var id = UUID()
 
-    func updateNSView(_ view: TaskbarMenuRegionView, context: Context) {
-        view.edge = edge
-        view.items = items
+    func body(content: Content) -> some View {
+        content.background {
+            GeometryReader { proxy in
+                let frame = proxy.frame(in: .named(TaskbarMenuRegistry.space))
+                // The view may be drawn again with new values and the same frame.
+                let _ = registry?.refresh(id, edge: edge, items: items)
+                Color.clear
+                    .onAppear { registry?.set(id, frame: frame, edge: edge, items: items) }
+                    .onChange(of: frame) { _, newFrame in
+                        registry?.set(id, frame: newFrame, edge: edge, items: items)
+                    }
+                    .onDisappear { registry?.remove(id) }
+            }
+        }
     }
 }
 
@@ -101,6 +139,6 @@ extension View {
     /// Gives this part of a taskbar a right-click menu. Put it last, so it covers the whole view.
     /// The items are worked out when the menu opens.
     func taskbarMenu(edge: TaskbarPosition?, items: @escaping @MainActor () -> [TaskbarMenuItem]) -> some View {
-        background { TaskbarMenuRegion(edge: edge, items: items) }
+        modifier(TaskbarMenuModifier(edge: edge, items: items))
     }
 }
