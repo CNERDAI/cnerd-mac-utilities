@@ -11,16 +11,103 @@ Native Swift, no dependencies, no account, no data collection. Developed by [CNE
 
 If it saves you time, you can [support development with a donation](https://cnerd.ai/shop/?app=mac-utilities).
 
-## What it does
-
-| Module | Features |
-| --- | --- |
-| **Window Manager** | Maximize that fills the screen without entering Full Screen, and restores on the second use. Left half, right half, center. Global keyboard shortcuts. Optional: make the green window button maximize instead of going Full Screen (beta). |
-| **Taskbar & Dock** | A Windows-style taskbar on all displays, the main display, or the other displays. Put it on the bottom, top, left, or right. Square or rounded edges, glass or solid, an icon size slider, app names and their size and position. When the apps do not fit, the taskbar hides the names, shrinks the icons, then puts the rest behind a +N button. With more than one display, each taskbar can show only the apps that have a window on its display, or only the apps you choose for it. Drag apps to reorder. Group apps by topic (AI Tools, Browsers, and so on) or into groups you make, and arrange them in **App Icon Controls**. Right-click an app for Keep in Taskbar, Show All Windows, Show in Finder, Hide, Quit. Hide running apps behind a Hidden Apps button that shows how many are running, and open them from a pop-up next to the taskbar. Right-click the Trash to empty it or eject a disk. Right-click the Applications button for the taskbar settings. One switch goes between the taskbar and the Apple Dock, and back. Switches for the real Dock: auto-hide, position, size, and turn the Dock off. |
-| **Finder Enhancements** | Show hidden files, copy the full path of the Finder selection, quick access to common folders. |
-| **Desktop Manager** | Read-only list of Desktop files with sorting, and information about every connected display. |
+## Features
 
 Every module has its own on and off switch. When a module is off it does nothing.
+
+### Window Manager
+
+- **Windows-style maximize.** Fills the usable screen without going into Full Screen. The menu bar stays in place, and the window stops at the Dock and at the taskbar.
+- **Restore.** Maximize again and the window goes back to the size and place it had.
+- **Snap.** Move a window to the left half, the right half, or the center of its display.
+- **Multiple displays.** Every action stays on the display the window is on.
+- **Global keyboard shortcuts.** They work from any app. The defaults are Control-Option with the arrow keys and C.
+- **Your own shortcuts.** Record a new shortcut for each action, reset one, or restore the defaults. A shortcut that macOS already uses is refused.
+- **Green window button (beta, off by default).** A click on the green button maximizes the window, and a second click restores it. Option-click still zooms. It works in apps that use the standard window buttons.
+- **Menu bar commands.** Maximize, left, right, and center are also in the menu bar icon's menu.
+
+### Taskbar & Dock
+
+**The taskbar**
+
+- **A Windows-style taskbar** on all displays, on the main display only, or on the other displays only.
+- **Any edge.** Bottom, top, left, or right. This is separate from the Dock's position.
+- **Look.** Square edges that run edge to edge like Windows, or rounded edges that float like the Dock. Glass or solid background.
+- **Icon size.** A slider from 16 to 72 points. The taskbar follows as you drag.
+- **App names.** On or off, in four sizes, placed right of, left of, above, or below the icon.
+- **Running apps.** The taskbar shows the apps that are open, marks the app in front, and updates as apps open and quit.
+- **Click to switch.** Click an app to bring it forward. Click the app in front to hide it.
+- **Drag to reorder.** The order is saved.
+- **Keep in Taskbar.** A kept app stays on the taskbar when it is not running, and a click opens it.
+- **Auto-fit.** When the apps do not fit, the taskbar hides the names, then shrinks the icons, then puts the rest behind a "+N" button. A click on that button opens a pop-up with the apps that did not fit.
+- **Applications button.** A click opens the Applications folder. A right-click gives Taskbar & Dock Settings, App Icon Controls, and Switch to Apple Dock.
+- **Trash.** A click opens the Trash. A right-click gives Open, Empty Trash (it asks first), and Eject for each disk or all of them. The Trash can be turned off.
+- **Keep Windows Clear of the Taskbar.** Maximize and snap stop at the taskbar's edge.
+- **Follows the Dock.** When the Dock is hidden, the taskbar slides into the Dock's space. The taskbar steps aside for apps in Full Screen.
+
+**More than one display**
+
+- **Show Apps On.** Every taskbar can show every app (All Taskbars), or each taskbar can show the apps that have a window on its display (Main Taskbar and Where the Window Is, or Only Where the Window Is).
+- **Apps chosen per display.** Set a display to Only Apps I Choose and its taskbar shows just those apps, in your order, running or not. Good for a small screen that has one job.
+- **Buttons per display.** A switch shows or hides the Applications, Hidden Apps, and Trash buttons on a chosen-apps taskbar.
+- **Remembered per display.** The choices come back after a restart and after a display is unplugged and plugged in again.
+- **Fitted per display.** A small screen can shrink its icons while a large one does not.
+
+**App groups and App Icon Controls**
+
+- **Group Apps.** Related apps sit side by side with a line between groups.
+- **Sorted by topic.** AI Tools, Browsers, Communication, Productivity, Developer Tools, Design & Media, Games, System & Utilities, and Other. New apps can be sorted as they are first opened, and Group by Topic sorts everything again.
+- **Your own groups.** Make, rename, delete, and reorder groups. Drag apps inside a group or into another one.
+- **App Icon Controls screen.** One place for the icon size, the groups, the hidden apps, and the apps for each display. Add App puts any app on the taskbar.
+
+**Hidden apps**
+
+- **Hide from Taskbar.** Moves a running app off the bar and behind the Hidden Apps button. The app keeps running.
+- **Hidden Apps button.** Shows how many hidden apps are running. A click opens a pop-up next to the taskbar, where the apps work the same as on the bar.
+- **Bring them back.** Show in Taskbar for one app, or Show All in Taskbar for all of them. Apps can also be dragged in and out.
+- **Four button pictures.** Sunglasses, Stack, Eye, or Drawer.
+
+**Right-click an app**
+
+- Open, Show All Windows, Hide, and Quit
+- Keep in Taskbar and Remove from Taskbar
+- Hide from Taskbar and Show in Taskbar
+- Move to Group
+- Show on Display and Remove from This Display
+- Show in Finder
+
+**The Apple Dock**
+
+- **One switch** goes between this taskbar and the Apple Dock, and back. It is in the Applications button's menu, in Taskbar & Dock settings, in the menu bar icon's menu, and in this app's Dock icon menu.
+- **Dock switches.** Auto-hide, position (left, bottom, or right), and size.
+- **Turn Off the macOS Dock.** Keeps the Dock from sliding back in while the taskbar is in use. The app asks first, and one switch brings the Dock back.
+
+### Finder Enhancements
+
+- **Show Hidden Files.** The app asks before it restarts Finder.
+- **Copy Selected File Path.** Copies the full path of the files or folders selected in Finder. Also in the menu bar icon's menu.
+- **Quick Access Folders.** Home, Documents, Downloads, Desktop, and Applications.
+
+### Desktop Manager
+
+- **Display information.** Every connected display with its name, resolution, available desktop area, and which one is primary. The list updates when a display is plugged in or unplugged.
+- **Desktop file list.** Sort by name, type, or date modified, refresh, and open the folder or an item in Finder. The list is read-only. The app never moves, renames, or deletes your files.
+- **Desktop icons.** A button opens the macOS Desktop & Dock setting that shows or hides them.
+
+### The app itself
+
+- **Dashboard.** Every utility with its on and off state, the Accessibility permission, Launch at Login, and the version.
+- **Menu bar icon.** Window commands, Copy Finder Selection Path, the taskbar and Apple Dock switch, Open, Donate, and Quit. The icon can be turned off.
+- **Launch at Login.**
+- **Light and dark.** Follows your macOS setting.
+- **Permissions in one place.** General Settings shows each permission, whether it is granted, and a button to grant it. The app asks only when a feature needs it.
+- **Stays out of the way.** Closing the window does not quit the app.
+- **Version and build number** in the sidebar, the Dashboard, and General Settings.
+- **Private.** No account, no data collection, and no network connections.
+- **Free and open source.** MIT license, no dependencies. A Donate menu for anyone who wants to help, and an I Have Donated switch on the honor system.
+- **Signed and notarized by Apple.** One download for Apple silicon and Intel.
+
+Limits and test notes for each feature are in [docs/FEASIBILITY.md](docs/FEASIBILITY.md).
 
 ## Requirements
 
