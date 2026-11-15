@@ -142,16 +142,18 @@ private struct TaskbarBar: View {
 
     private var trashButton: some View {
         let side = iconSize + 2 * TaskbarLayout.buttonPadding
+        // Like the Dock: a full Trash when something is in it, an empty one when nothing is.
+        let isFull = controller.trash.hasItems
         return Button {
             controller.openTrash()
         } label: {
             Group {
-                if let image = NSImage(named: NSImage.trashEmptyName) {
+                if let image = NSImage(named: isFull ? NSImage.trashFullName : NSImage.trashEmptyName) {
                     Image(nsImage: image)
                         .resizable()
                         .frame(width: iconSize, height: iconSize)
                 } else {
-                    Image(systemName: "trash")
+                    Image(systemName: isFull ? AppSymbol.trashFull : AppSymbol.trash)
                         .font(.system(size: iconSize * 0.58))
                 }
             }
@@ -159,8 +161,15 @@ private struct TaskbarBar: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .help("Click to open the Trash. Right-click to empty it or eject a disk.")
+        .help(isFull
+            ? "The Trash has items in it. Click to open it. Right-click to empty it or eject a disk."
+            : "The Trash is empty. Click to open it. Right-click to eject a disk.")
         .accessibilityLabel("Trash")
+        .accessibilityValue(isFull ? "Has items" : "Empty")
+        // Look again as the pointer arrives, so the Trash is right just before it is used.
+        .onHover { isInside in
+            if isInside { controller.trash.refresh() }
+        }
         .taskbarMenu(edge: position) {
             trashMenu
         }

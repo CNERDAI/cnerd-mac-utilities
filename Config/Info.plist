@@ -25,7 +25,7 @@
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 	<key>NSAppleEventsUsageDescription</key>
-	<string>CNERD Mac Utilities asks Finder which files are selected so it can copy their paths, asks Finder to empty the Trash when you choose Empty Trash, and changes Dock settings through System Events when you use the Dock switches.</string>
+	<string>CNERD Mac Utilities asks Finder which files are selected so it can copy their paths, asks Finder to empty the Trash when you choose Empty Trash, asks Finder whether the Trash has anything in it so the taskbar can show it full or empty, and changes Dock settings through System Events when you use the Dock switches.</string>
 	<key>NSDesktopFolderUsageDescription</key>
 	<string>CNERD Mac Utilities lists the files on your Desktop in the Desktop Manager. It never moves, renames, or deletes them.</string>
 	<key>NSHumanReadableCopyright</key>

@@ -61,7 +61,7 @@ Every module has its own on and off switch. When a module is off it does nothing
 - **Add from Apple Dock.** Lists the apps kept in the Apple Dock that the taskbar does not have yet. Add one, or all of them at once.
 - **Drop apps from Finder.** Drag an app from the Applications folder, or from any Finder window, onto the taskbar. Drop it between two apps to put it there.
 - **Applications button.** A click opens the Applications folder.
-- **Trash.** A click opens the Trash. A right-click gives Open, Empty Trash (it asks first), and Eject for each disk or all of them. The Trash can be turned off.
+- **Trash.** Shows a full Trash when something is in it and an empty one when nothing is, like the Dock. A click opens the Trash. A right-click gives Open, Empty Trash (it asks first), and Eject for each disk or all of them. The Trash can be turned off.
 - **Keep Windows Clear of the Taskbar.** Maximize and snap stop at the taskbar's edge.
 - **Follows the Dock.** When the Dock is hidden, the taskbar slides into the Dock's space. The taskbar steps aside for apps in Full Screen.
 
@@ -184,7 +184,7 @@ The app asks for a permission only when a feature needs it.
 | Permission | Used for | When macOS asks |
 | --- | --- | --- |
 | Accessibility | Moving and resizing other apps' windows, the green button option | When you click Request Access |
-| Automation: Finder | Reading which files are selected, to copy their paths. Emptying the Trash from the taskbar. | First use of Copy Path or Empty Trash |
+| Automation: Finder | Reading which files are selected, to copy their paths. Emptying the Trash from the taskbar. Once allowed, also counting the items in the Trash, so the taskbar shows it full or empty. | First use of Copy Path or Empty Trash |
 | Automation: System Events | Changing Dock auto-hide, position, and size | First use of a Dock switch |
 | Desktop folder | Listing the files on your Desktop | First time you open Desktop Manager |
 

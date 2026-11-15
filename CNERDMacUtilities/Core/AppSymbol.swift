@@ -21,7 +21,8 @@ enum AppSymbol {
     static let moveUp = "chevron.up"
     static let moveDown = "chevron.down"
     static let trash = "trash"
+    static let trashFull = "trash.fill"
     static let add = "plus"
 
-    static let all: [String] = [menuBar, warning, checkmark, info, remove, refresh, copy, display, folder, lock, applications, donate, pinned, unpinned, dragHandle, moveUp, moveDown, trash, add]
+    static let all: [String] = [menuBar, warning, checkmark, info, remove, refresh, copy, display, folder, lock, applications, donate, pinned, unpinned, dragHandle, moveUp, moveDown, trash, trashFull, add]
 }

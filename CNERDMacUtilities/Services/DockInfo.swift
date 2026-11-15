@@ -4,9 +4,22 @@ import AppKit
 /// Reading them needs no permission.
 @MainActor
 enum DockInfo {
+    /// The name of the Dock's preferences.
+    static let domain = "com.apple.dock"
+    /// The Dock's own note of whether the Trash has anything in it.
+    static let trashFullKey = "trash-full"
+
+    /// True when the Dock's note says the Trash has something in it, on any disk. This key is
+    /// the Dock's own and is not documented by Apple. When it is missing, the Trash counts as empty.
+    static var trashIsFull: Bool {
+        let dockID = domain as CFString
+        CFPreferencesAppSynchronize(dockID)
+        return CFPreferencesGetAppBooleanValue(trashFullKey as CFString, dockID, nil)
+    }
+
     /// True when the Dock is set to hide automatically (or has been turned off from this app).
     static var isAutoHidden: Bool {
-        let dockID = "com.apple.dock" as CFString
+        let dockID = domain as CFString
         CFPreferencesAppSynchronize(dockID)
         return CFPreferencesGetAppBooleanValue("autohide" as CFString, dockID, nil)
     }
@@ -14,7 +27,7 @@ enum DockInfo {
     /// The apps kept in the macOS Dock, in the Dock's order. Finder and the Trash are not in
     /// this list, because the Dock always shows them.
     static var keptApps: [DockApp] {
-        let dockID = "com.apple.dock" as CFString
+        let dockID = domain as CFString
         CFPreferencesAppSynchronize(dockID)
         guard let tiles = CFPreferencesCopyAppValue("persistent-apps" as CFString, dockID) as? [[String: Any]] else { return [] }
         return DockApp.apps(fromDockTiles: tiles)

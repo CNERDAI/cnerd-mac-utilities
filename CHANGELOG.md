@@ -3,6 +3,12 @@
 Every release is listed here, newest first. The version comes from `Config/Version.xcconfig`
 and is changed with `./version.sh`. See "Versions and releases" in the README.
 
+## 1.2.1 (2026-11-15)
+
+### Taskbar
+
+- **The Trash shows full or empty.** With something in the Trash, the taskbar shows a full Trash, the same as the Dock. Empty it and the picture goes back to an empty Trash. The app reads the Dock's own note of the Trash, which needs no permission. Once the app is allowed to control Finder (the first time you use Empty Trash or Copy Path), it also asks Finder for the exact count. It never asks for a new permission for this.
+
 ## 1.2.0 (2026-11-14)
 
 ### Taskbar

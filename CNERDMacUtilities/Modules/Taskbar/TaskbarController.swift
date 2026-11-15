@@ -42,6 +42,8 @@ final class TaskbarController: UtilityModule {
 
     /// Disks the Trash menu can eject: external drives, disk images, and network volumes.
     private(set) var ejectableVolumes: [EjectableVolume] = []
+    /// Whether the Trash has anything in it, so the taskbar can show a full or an empty Trash.
+    let trash = TrashMonitor()
 
     /// The app being dragged to a new spot, on the taskbar or in App Icon Controls.
     @ObservationIgnored private(set) var draggedAppID: String?
@@ -104,6 +106,8 @@ final class TaskbarController: UtilityModule {
                 self?.refresh()
                 // An app's windows show up a moment after the app itself is announced.
                 self?.followWindowChanges()
+                // Most things land in the Trash from Finder, so look again when apps come and go.
+                self?.trash.refresh()
             }
         }
         // An open pop-up closes as soon as another app comes to the front.
@@ -166,6 +170,8 @@ final class TaskbarController: UtilityModule {
 
     /// Creates, moves, or removes taskbars so they match the settings and the connected displays.
     func refresh() {
+        // The Trash is only watched while a taskbar shows it.
+        trash.isWatching = settings.taskbarEnabled && settings.taskbarShowTrash
         guard settings.taskbarEnabled else {
             closePopup()
             endBarDrag()
@@ -1276,6 +1282,7 @@ final class TaskbarController: UtilityModule {
 
     /// Opens the Trash in Finder.
     func openTrash() {
+        trash.refresh()
         guard let url = try? FileManager.default.url(for: .trashDirectory, in: .userDomainMask, appropriateFor: nil, create: false) else { return }
         NSWorkspace.shared.open(url)
     }
@@ -1319,6 +1326,8 @@ final class TaskbarController: UtilityModule {
         """
         var errorInfo: NSDictionary?
         NSAppleScript(source: source)?.executeAndReturnError(&errorInfo)
+        // Finder may have emptied all of it, some of it, or none of it. Show what is left.
+        trash.refresh()
         guard let errorInfo else { return }
 
         let code = errorInfo[NSAppleScript.errorNumber] as? Int ?? 0
