@@ -3,6 +3,25 @@
 Every release is listed here, newest first. The version comes from `Config/Version.xcconfig`
 and is changed with `./version.sh`. See "Versions and releases" in the README.
 
+## 1.3.0 (2026-11-15)
+
+### New
+
+- **Export and import your settings.** General Settings has a new Back Up and Transfer section. Export saves your whole setup to one file: the taskbar with its apps and groups, the per-display setup, the keyboard shortcuts, and every switch. Import that file on another Mac to get the same setup. Your current settings are saved first, and Undo Last Import puts them back.
+- **The CNERD AI logo** is on the Dashboard, in About, and at the bottom of the sidebar. It has a dark version for light appearance and a white version for dark appearance.
+- **Names and Trademarks.** About now ends with a short note, and a button opens the full one.
+
+### License
+
+- **The source code is now under the Apache License 2.0.** Versions 1.0.0 through 1.2.1 were released under the MIT license and stay that way. You can still use, change, and share the code.
+- **The artwork is not open source.** The CNERD AI logo, the app icon, and the other images are copyright CNERD AI, all rights reserved. See `Artwork/LICENSE.md`. A changed version of the app needs its own name and its own artwork.
+- New `NOTICE` file, and an updated `TRADEMARKS.md`.
+
+### Notes
+
+- Permissions and Launch at Login are not part of a settings file. macOS asks for those on each Mac.
+- A settings file never says whether the Dock was turned off, so an import cannot leave a Mac without a Dock.
+
 ## 1.2.1 (2026-11-15)
 
 ### Taskbar

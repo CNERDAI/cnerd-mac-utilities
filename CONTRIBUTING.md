@@ -36,4 +36,4 @@ All tests must pass with no compiler warnings. `./build.sh` raises the build num
 5. Add a screen in `Views/Settings/` and route to it in `MainWindowView.detail(for:)`.
 6. Run `xcodegen generate`.
 
-By contributing you agree that your work is released under the MIT license. The CNERD AI and CNERD Mac Utilities names and logos are not part of that license. See [TRADEMARKS.md](TRADEMARKS.md).
+By contributing you agree that your work is released under the Apache License 2.0, the same as the rest of the code. The CNERD AI and CNERD Mac Utilities names, logos, and artwork are not part of that license. See [TRADEMARKS.md](TRADEMARKS.md) and [Artwork/LICENSE.md](Artwork/LICENSE.md).

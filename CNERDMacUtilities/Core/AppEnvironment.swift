@@ -31,6 +31,7 @@ final class AppEnvironment {
     let navigation: AppNavigation
     let permissions: PermissionsService
     let loginItem: LoginItemService
+    let transfer: SettingsTransferService
 
     let windowManager: WindowManagerController
     let finder: FinderController
@@ -53,6 +54,11 @@ final class AppEnvironment {
         self.desktop = DesktopController(settings: settings)
         let taskbar = TaskbarController(settings: settings)
         self.taskbar = taskbar
+        // Export and import: one file with every setting.
+        let transfer = SettingsTransferService(settings: settings)
+        transfer.connectedDisplays = { TaskbarController.connectedDisplays() }
+        transfer.showTaskbar = { isOn in taskbar.switchBar(to: isOn ? .taskbar : .appleDock) }
+        self.transfer = transfer
         // Window Manager keeps maximized and snapped windows clear of the taskbar.
         windowManager.screenInsets = { screen in taskbar.reservedInsets(for: screen) }
         // Right-clicking the taskbar's Applications button opens its settings.

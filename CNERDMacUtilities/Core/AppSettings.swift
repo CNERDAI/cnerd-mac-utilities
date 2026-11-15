@@ -111,6 +111,8 @@ final class AppSettings {
     var hasDonated: Bool { didSet { store(hasDonated, .hasDonated) } }
 
     private let defaults: UserDefaults
+    /// True while many settings change together. See `batch`.
+    @ObservationIgnored private var isBatching = false
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
@@ -183,11 +185,112 @@ final class AppSettings {
         shortcuts = ShortcutAction.defaultShortcuts
     }
 
+    // MARK: - Export and import
+
+    /// Everything that can move to another Mac. Left out: the Dock on or off state, which
+    /// belongs to this Mac, and app identifiers that only last until the app quits ("pid:123").
+    func snapshot() -> SettingsSnapshot {
+        func lasting(_ ids: [String]) -> [String] { ids.filter { !$0.hasPrefix("pid:") } }
+        return SettingsSnapshot(
+            windowManagerEnabled: windowManagerEnabled,
+            maximizeEnabled: maximizeEnabled,
+            greenButtonEnabled: greenButtonEnabled,
+            snappingEnabled: snappingEnabled,
+            windowShortcutsEnabled: windowShortcutsEnabled,
+            shortcuts: Dictionary(uniqueKeysWithValues: shortcuts.map { ($0.key.rawValue, $0.value) }),
+            finderEnabled: finderEnabled,
+            desktopEnabled: desktopEnabled,
+            desktopSortOrder: desktopSortOrder.rawValue,
+            taskbarEnabled: taskbarEnabled,
+            taskbarDisplayMode: taskbarDisplayMode.rawValue,
+            taskbarAppScope: taskbarAppScope.rawValue,
+            taskbarShowAppNames: taskbarShowAppNames,
+            taskbarReserveSpace: taskbarReserveSpace,
+            taskbarPosition: taskbarPosition.rawValue,
+            taskbarIconPoints: taskbarIconPoints,
+            taskbarNamePosition: taskbarNamePosition.rawValue,
+            taskbarGlassBackground: taskbarGlassBackground,
+            taskbarCornerStyle: taskbarCornerStyle.rawValue,
+            taskbarNameSize: taskbarNameSize.rawValue,
+            taskbarShowTrash: taskbarShowTrash,
+            taskbarPinnedApps: lasting(taskbarPinnedApps),
+            taskbarAppOrder: lasting(taskbarAppOrder),
+            taskbarGroupingEnabled: taskbarGroupingEnabled,
+            taskbarAutoGroupNewApps: taskbarAutoGroupNewApps,
+            taskbarGroups: taskbarGroups.map { TaskbarGroup(id: $0.id, name: $0.name, appIDs: lasting($0.appIDs)) },
+            taskbarHiddenApps: lasting(taskbarHiddenApps),
+            taskbarHiddenIcon: taskbarHiddenIcon.rawValue,
+            taskbarDisplayRules: taskbarDisplayRules,
+            showMenuBarIcon: showMenuBarIcon,
+            hasDonated: hasDonated
+        )
+    }
+
+    /// Takes over every setting the snapshot has. A setting the snapshot does not have, or has
+    /// with a value this version does not know, stays as it is. The rest of the app hears about
+    /// it once, at the end, so nothing reacts to a half-applied setup.
+    func apply(_ snapshot: SettingsSnapshot) {
+        batch {
+            if let value = snapshot.windowManagerEnabled { windowManagerEnabled = value }
+            if let value = snapshot.maximizeEnabled { maximizeEnabled = value }
+            if let value = snapshot.greenButtonEnabled { greenButtonEnabled = value }
+            if let value = snapshot.snappingEnabled { snappingEnabled = value }
+            if let value = snapshot.windowShortcutsEnabled { windowShortcutsEnabled = value }
+            if let saved = snapshot.shortcuts {
+                var result: [ShortcutAction: KeyCombo] = [:]
+                for (rawAction, combo) in saved {
+                    if let action = ShortcutAction(rawValue: rawAction) { result[action] = combo }
+                }
+                shortcuts = result
+            }
+            if let value = snapshot.finderEnabled { finderEnabled = value }
+            if let value = snapshot.desktopEnabled { desktopEnabled = value }
+            if let value = snapshot.desktopSortOrder.flatMap(DesktopSortOrder.init(rawValue:)) { desktopSortOrder = value }
+
+            if let value = snapshot.taskbarDisplayMode.flatMap(TaskbarDisplayMode.init(rawValue:)) { taskbarDisplayMode = value }
+            if let value = snapshot.taskbarAppScope.flatMap(TaskbarAppScope.init(rawValue:)) { taskbarAppScope = value }
+            if let value = snapshot.taskbarShowAppNames { taskbarShowAppNames = value }
+            if let value = snapshot.taskbarReserveSpace { taskbarReserveSpace = value }
+            if let value = snapshot.taskbarPosition.flatMap(TaskbarPosition.init(rawValue:)) { taskbarPosition = value }
+            if let value = snapshot.taskbarIconPoints { taskbarIconPoints = TaskbarIconScale.clamped(value) }
+            if let value = snapshot.taskbarNamePosition.flatMap(TaskbarNamePosition.init(rawValue:)) { taskbarNamePosition = value }
+            if let value = snapshot.taskbarGlassBackground { taskbarGlassBackground = value }
+            if let value = snapshot.taskbarCornerStyle.flatMap(TaskbarCornerStyle.init(rawValue:)) { taskbarCornerStyle = value }
+            if let value = snapshot.taskbarNameSize.flatMap(TaskbarNameSize.init(rawValue:)) { taskbarNameSize = value }
+            if let value = snapshot.taskbarShowTrash { taskbarShowTrash = value }
+            if let value = snapshot.taskbarPinnedApps { taskbarPinnedApps = value }
+            if let value = snapshot.taskbarAppOrder { taskbarAppOrder = value }
+            if let value = snapshot.taskbarGroups { taskbarGroups = value }
+            if let value = snapshot.taskbarGroupingEnabled { taskbarGroupingEnabled = value }
+            if let value = snapshot.taskbarAutoGroupNewApps { taskbarAutoGroupNewApps = value }
+            if let value = snapshot.taskbarHiddenApps { taskbarHiddenApps = value }
+            if let value = snapshot.taskbarHiddenIcon.flatMap(HiddenAppsIcon.init(rawValue:)) { taskbarHiddenIcon = value }
+            if let value = snapshot.taskbarDisplayRules { taskbarDisplayRules = value }
+            if let value = snapshot.taskbarEnabled { taskbarEnabled = value }
+
+            if let value = snapshot.showMenuBarIcon { showMenuBarIcon = value }
+            if let value = snapshot.hasDonated { hasDonated = value }
+        }
+    }
+
+    /// Runs several changes and tells the rest of the app once, after the last one.
+    private func batch(_ changes: () -> Void) {
+        isBatching = true
+        changes()
+        isBatching = false
+        announceChange()
+    }
+
     // MARK: - Storage
+
+    private func announceChange() {
+        guard !isBatching else { return }
+        NotificationCenter.default.post(name: .appSettingsDidChange, object: nil)
+    }
 
     private func store(_ value: Any, _ key: Key) {
         defaults.set(value, forKey: key.rawValue)
-        NotificationCenter.default.post(name: .appSettingsDidChange, object: nil)
+        announceChange()
     }
 
     private func storeShortcuts() {
@@ -195,21 +298,21 @@ final class AppSettings {
         if let data = try? JSONEncoder().encode(encodable) {
             defaults.set(data, forKey: Key.shortcuts.rawValue)
         }
-        NotificationCenter.default.post(name: .appSettingsDidChange, object: nil)
+        announceChange()
     }
 
     private func storeGroups() {
         if let data = try? JSONEncoder().encode(taskbarGroups) {
             defaults.set(data, forKey: Key.taskbarGroups.rawValue)
         }
-        NotificationCenter.default.post(name: .appSettingsDidChange, object: nil)
+        announceChange()
     }
 
     private func storeDisplayRules() {
         if let data = try? JSONEncoder().encode(taskbarDisplayRules) {
             defaults.set(data, forKey: Key.taskbarDisplayRules.rawValue)
         }
-        NotificationCenter.default.post(name: .appSettingsDidChange, object: nil)
+        announceChange()
     }
 
     private static func loadDisplayRules(from defaults: UserDefaults) -> [TaskbarDisplayRule] {

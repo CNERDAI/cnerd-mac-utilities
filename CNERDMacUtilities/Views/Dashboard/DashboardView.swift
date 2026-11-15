@@ -7,6 +7,10 @@ struct DashboardView: View {
 
     var body: some View {
         SettingsPage(.dashboard) {
+            Section {
+                BrandHeader()
+            }
+
             Section("Utilities") {
                 ForEach(SidebarItem.modules) { item in
                     moduleRow(item)
@@ -14,10 +18,6 @@ struct DashboardView: View {
             }
 
             Section("Status") {
-                LabeledContent("Version", value: AppInfo.versionDisplay)
-
-                LabeledContent("License", value: "Free and open source (MIT)")
-
                 LabeledContent("Accessibility Permission") {
                     if environment.permissions.isAccessibilityTrusted {
                         StatusBadge("Granted", level: .good)

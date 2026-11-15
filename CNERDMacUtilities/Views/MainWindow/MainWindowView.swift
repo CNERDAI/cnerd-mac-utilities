@@ -67,9 +67,8 @@ struct SidebarView: View {
                     .frame(width: 44, height: 44)
                     .padding(.bottom, 5)
                     .accessibilityLabel(AppInfo.name)
-                Link(AppInfo.developer, destination: AppInfo.websiteURL)
-                    .font(.caption.weight(.semibold))
-                    .help("Open the CNERD AI website")
+                DeveloperLogoLink(height: 15)
+                    .padding(.bottom, 3)
                 // The build number shows too, so it is clear which build is running.
                 Text("Version \(AppInfo.versionDisplay)")
                     .font(.caption)

@@ -1,12 +1,14 @@
 # Names, logos, and trademarks
 
-CNERD Mac Utilities is open source. The code is free to use, change, and share under the [MIT license](LICENSE).
+CNERD Mac Utilities is open source. The code is free to use, change, and share under the [Apache License 2.0](LICENSE).
 
-Names and logos are a separate matter. This page covers both sides: ours, and everyone else's.
+Names, logos, and artwork are a separate matter. The Apache license says so itself: it gives no permission to use the licensor's trade names, trademarks, or product names. This page covers both sides: ours, and everyone else's.
 
 ## CNERD AI names and logos
 
-"CNERD", "CNERD AI", "CNERD Mac Utilities", the CNERD AI logo, and the CNERD Mac Utilities app icon are trademarks of CNERD AI. The MIT license covers the source code. It does not give anyone the right to use these names and logos as their own.
+"CNERD", "CNERD AI", "CNERD Mac Utilities", the CNERD AI logo, and the CNERD Mac Utilities app icon are trademarks of CNERD AI. The Apache license covers the source code. It does not give anyone the right to use these names and logos as their own.
+
+The logo and icon files are also copyright CNERD AI, all rights reserved. They are not open source. See [Artwork/LICENSE.md](Artwork/LICENSE.md).
 
 You are welcome to:
 
@@ -17,9 +19,9 @@ You are welcome to:
 If you share a changed version (a fork), please:
 
 - Give it a different name.
-- Use your own icon and logo.
+- Use your own icon and logo, and take ours out. [Artwork/LICENSE.md](Artwork/LICENSE.md) lists the files.
 - Do not suggest that CNERD AI made it or stands behind it.
-- Keep the copyright and license notice from [LICENSE](LICENSE). The MIT license requires that.
+- Keep [LICENSE](LICENSE) and [NOTICE](NOTICE), and say which files you changed. The Apache license requires that.
 
 Please do not change the CNERD AI logo or the app icon, and do not use them on anything that is not the official app.
 

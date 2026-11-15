@@ -117,6 +117,7 @@ Every module has its own on and off switch. When a module is off it does nothing
 ### The app itself
 
 - **Dashboard.** Every utility with its on and off state, the Accessibility permission, Launch at Login, and the version.
+- **Export and import.** General Settings saves your whole setup to one file: the taskbar with its apps and groups, the per-display setup, the keyboard shortcuts, and every switch. Import it on another Mac to get the same setup. Your settings are saved before an import, so one click undoes it.
 - **Menu bar icon.** Window commands, Copy Finder Selection Path, the taskbar and Apple Dock switch, Open, Donate, and Quit. The icon can be turned off.
 - **Launch at Login.**
 - **Light and dark.** Follows your macOS setting.
@@ -124,7 +125,7 @@ Every module has its own on and off switch. When a module is off it does nothing
 - **Stays out of the way.** Closing the window does not quit the app.
 - **Version and build number** in the sidebar, the Dashboard, and General Settings.
 - **Private.** No account, no data collection, and no network connections.
-- **Free and open source.** MIT license, no dependencies. A Donate menu for anyone who wants to help, and an I Have Donated switch on the honor system.
+- **Free and open source.** Apache 2.0 license, no dependencies. A Donate menu for anyone who wants to help, and an I Have Donated switch on the honor system.
 - **Signed and notarized by Apple.** One download for Apple silicon and Intel.
 
 Limits and test notes for each feature are in [docs/FEASIBILITY.md](docs/FEASIBILITY.md).
@@ -251,7 +252,9 @@ CNERDMacUtilitiesTests/         Unit tests
 docs/                           FEASIBILITY.md, ARCHITECTURE.md, and images for this page
 CHANGELOG.md                    What changed in each release
 version.sh                      Shows or raises the version
-Artwork/                        Icon source artwork
+Artwork/                        The CNERD AI logo and icon source artwork. Not open source: see Artwork/LICENSE.md
+LICENSE, NOTICE                 Apache License 2.0 for the source code
+TRADEMARKS.md                   Names and logos: ours, and everyone else's
 ```
 
 More detail is in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
@@ -266,13 +269,28 @@ CNERD Mac Utilities is free. If you want to help pay for the time that goes into
 
 After you donate, you can turn on **I Have Donated** in General Settings. It swaps the Donate button for a thank-you. It is on the honor system: nothing is checked, and nothing is locked either way.
 
+## Developed by
+
+<p>
+  <a href="https://cnerd.ai">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="Artwork/CNERD-AI-Logo-White.png">
+      <img src="Artwork/CNERD-AI-Logo-Black.png" width="220" alt="CNERD AI">
+    </picture>
+  </a>
+</p>
+
 ## License
 
-[MIT](LICENSE). Copyright (c) 2026 CNERD AI.
+The source code is under the [Apache License 2.0](LICENSE). Copyright 2026 CNERD AI. See [NOTICE](NOTICE).
+
+The artwork is not open source. The CNERD AI logo, the app icon, and the other images are copyright CNERD AI, all rights reserved. See [Artwork/LICENSE.md](Artwork/LICENSE.md).
+
+Versions 1.0.0 through 1.2.1 were released under the MIT license. Version 1.3.0 and later use Apache 2.0.
 
 ## Names, logos, and trademarks
 
-The MIT license covers the source code. The CNERD AI and CNERD Mac Utilities names, logos, and app icon are trademarks of CNERD AI and are not part of that license. If you share a changed version, please give it your own name and icon.
+The Apache license covers the source code. The CNERD AI and CNERD Mac Utilities names, logos, and app icon are trademarks of CNERD AI and are not part of that license. If you share a changed version, give it your own name, icon, and logo.
 
 CNERD Mac Utilities is not affiliated with, endorsed by, or sponsored by Apple Inc. or Microsoft Corporation. Mac, macOS, Finder, and Dock are trademarks of Apple Inc. Windows is a trademark of Microsoft Corporation. All other names, logos, and app icons belong to their owners, and are mentioned with respect, only to describe what this app works with.
 

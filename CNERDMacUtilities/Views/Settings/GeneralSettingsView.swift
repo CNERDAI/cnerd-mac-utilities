@@ -3,11 +3,13 @@ import SwiftUI
 struct GeneralSettingsView: View {
     @Environment(AppEnvironment.self) private var environment
     @Environment(\.colorScheme) private var colorScheme
+    @State private var showsTrademarks = false
 
     var body: some View {
         @Bindable var settings = environment.settings
         let loginItem = environment.loginItem
         let permissions = environment.permissions
+        let transfer = environment.transfer
 
         SettingsPage(.generalSettings) {
             Section("Startup") {
@@ -84,9 +86,41 @@ struct GeneralSettingsView: View {
             }
 
             Section {
-                LabeledContent("Application", value: AppInfo.name)
-                LabeledContent("Version", value: AppInfo.versionDisplay)
-                LabeledContent("License", value: "Free and open source (MIT)")
+                SettingRow(
+                    "Export Settings",
+                    description: "Saves your whole setup to one file: the taskbar with its apps and groups, the keyboard shortcuts, and every switch. Copy the file to another Mac and import it there."
+                ) {
+                    Button("Export…") { transfer.exportWithPanel() }
+                }
+                SettingRow(
+                    "Import Settings",
+                    description: "Replaces the settings on this Mac with the ones in a settings file. Your current settings are saved first, so you can undo."
+                ) {
+                    Button("Import…") { transfer.importWithPanel() }
+                }
+                if transfer.canUndoImport {
+                    SettingRow(
+                        "Undo Last Import",
+                        description: "Puts back the settings this Mac had before the last import."
+                    ) {
+                        Button("Undo") { transfer.undoLastImport() }
+                    }
+                }
+                if let notice = transfer.notice {
+                    NoticeRow(text: notice.text, kind: notice.isProblem ? .warning : .success)
+                }
+            } header: {
+                Text("Back Up and Transfer")
+            } footer: {
+                Text("Permissions and Launch at Login are not part of the file, because macOS asks for those on each Mac. The file never leaves your Mac unless you send it.")
+            }
+
+            Section {
+                BrandHeader()
+                LabeledContent("License") {
+                    Link(AppInfo.licenseSummary, destination: AppInfo.licenseURL)
+                        .help("Read the license on GitHub")
+                }
                 LabeledContent("Source Code") {
                     Link("GitHub", destination: AppInfo.sourceURL)
                         .help("Open the project on GitHub")
@@ -99,15 +133,17 @@ struct GeneralSettingsView: View {
                     description: "Swaps the Donate button in the sidebar and the menu bar for a thank-you. This is on the honor system. Nothing is checked or sent.",
                     isOn: $settings.hasDonated
                 )
-                LabeledContent("Developed by") {
-                    Link(AppInfo.developer, destination: AppInfo.websiteURL)
-                        .help("Open the CNERD AI website")
+                LabeledContent("Names and Trademarks") {
+                    Button("Read…") { showsTrademarks = true }
                 }
             } header: {
                 Text("About")
             } footer: {
-                Text(AppInfo.trademarkNotice)
+                Text(AppInfo.trademarkSummary)
             }
+        }
+        .sheet(isPresented: $showsTrademarks) {
+            TrademarkSheet()
         }
         .onAppear {
             loginItem.refresh()

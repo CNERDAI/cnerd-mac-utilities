@@ -8,11 +8,22 @@ enum AppInfo {
     static let sourceURL = URL(string: "https://github.com/CNERDAI/cnerd-mac-utilities")!
     /// The logo artwork in the asset catalog, without the plate macOS adds around app icons.
     static let logoAssetName = "AppLogo"
+    /// The CNERD AI logo. The asset has a dark version for light backgrounds and a white
+    /// version for dark backgrounds, and macOS picks the one that fits.
+    static let developerLogoAssetName = "CNERDAILogo"
 
-    /// Shown under About. The longer version is TRADEMARKS.md in the repository.
+    /// The source code's license. The artwork has its own: Artwork/LICENSE.md in the repository.
+    static let licenseSummary = "Free and open source (Apache 2.0)"
+    static let licenseURL = URL(string: "https://github.com/CNERDAI/cnerd-mac-utilities/blob/main/LICENSE")!
+    static let trademarksURL = URL(string: "https://github.com/CNERDAI/cnerd-mac-utilities/blob/main/TRADEMARKS.md")!
+
+    /// The short note under About. The full one is `trademarkNotice`.
+    static let trademarkSummary = "CNERD, CNERD AI, CNERD Mac Utilities, and their logos are trademarks of CNERD AI. All other names, logos, and app icons belong to their owners."
+
+    /// Shown by the Names and Trademarks button under About. The longer version is TRADEMARKS.md in the repository.
     static let trademarkNotice = """
     CNERD, CNERD AI, CNERD Mac Utilities, and their logos are trademarks of CNERD AI. \
-    The MIT license covers the source code, not these names and logos. \
+    The Apache 2.0 license covers the source code, not these names, logos, and artwork. \
     Mac, macOS, Finder, and Dock are trademarks of Apple Inc. \
     Windows is a trademark of Microsoft Corporation. \
     All other names, logos, and app icons shown in this app belong to their owners. \

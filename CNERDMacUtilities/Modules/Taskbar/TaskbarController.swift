@@ -282,6 +282,14 @@ final class TaskbarController: UtilityModule {
         return text
     }
 
+    /// Every connected display, the main display first, as a settings file remembers them.
+    static func connectedDisplays() -> [BackupDisplay] {
+        NSScreen.screens.enumerated().map { index, screen in
+            let id = displayID(of: screen) ?? UInt32(index)
+            return BackupDisplay(key: displayKey(of: id), name: screen.localizedName, isMain: index == 0)
+        }
+    }
+
     // MARK: - Moving the bar to another edge
 
     private struct BarDrag {
