@@ -1,13 +1,15 @@
 # CNERD Mac Utilities
 
 <p align="center">
-  <img src="docs/images/readme-banner.png" width="100%" alt="CNERD Mac Utilities. Switch computers. Not habits. A Windows-style taskbar on every display, maximize that restores, and snap left and right, built natively for macOS. Free and open source.">
+  <img src="docs/images/readme-intro.png" width="100%" alt="CNERD AI. Windows Easy Switch to Mac. Keep Your Workflow. Familiar taskbars, multiple displays, dedicated workspaces, and Elgato integration, shown on three monitors.">
 </p>
 
 **Switch computers. Not habits.** If you work on Windows and on a Mac, you pay for it every time you change desks: no taskbar, a green button that goes Full Screen, and a Dock that lives on one screen at a time. CNERD Mac Utilities puts those Windows habits back, on every display you plug in.
 
 Free, open source utilities that make a Mac feel familiar to people who come from Windows.
 Native Swift, no dependencies, no account, no data collection. Developed by [CNERD AI](https://cnerd.ai).
+
+**[Download free at cnerd.ai/apps/mac-utilities](https://cnerd.ai/apps/mac-utilities)**
 
 If it saves you time, you can [support development with a donation](https://cnerd.ai/shop/?app=mac-utilities).
 
@@ -138,7 +140,7 @@ Limits and test notes for each feature are in [docs/FEASIBILITY.md](docs/FEASIBI
 
 ## Install
 
-**Download:** get the `.dmg` from the [latest release](https://github.com/CNERDAI/cnerd-mac-utilities/releases/latest). It is signed and notarized by Apple. Open the `.dmg` and drag the app to Applications.
+**Download:** get it free at [cnerd.ai/apps/mac-utilities](https://cnerd.ai/apps/mac-utilities). It is signed and notarized by Apple. Open the `.dmg` and drag the app to Applications. The same `.dmg` is also attached to each [GitHub release](https://github.com/CNERDAI/cnerd-mac-utilities/releases/latest).
 
 **Build it yourself:**
 
