@@ -50,7 +50,8 @@ final class AppEnvironment {
         self.permissions = permissions
         self.loginItem = LoginItemService()
         self.windowManager = WindowManagerController(settings: settings, permissions: permissions)
-        self.finder = FinderController(settings: settings, permissions: permissions)
+        let finder = FinderController(settings: settings, permissions: permissions)
+        self.finder = finder
         self.desktop = DesktopController(settings: settings)
         let taskbar = TaskbarController(settings: settings)
         self.taskbar = taskbar
@@ -63,6 +64,13 @@ final class AppEnvironment {
         windowManager.screenInsets = { screen in taskbar.reservedInsets(for: screen) }
         // Right-clicking the taskbar's Applications button opens its settings.
         taskbar.showSettings = { item in navigation.show(item) }
+        // Finder's right-click menu on the taskbar lists the quick folders.
+        taskbar.finderFolders = FinderFolderActions(
+            folders: { finder.menuFolders },
+            open: { finder.open($0) },
+            add: { finder.addFoldersWithPanel() },
+            edit: { navigation.show(.finderEnhancements) }
+        )
         Self.current = self
     }
 

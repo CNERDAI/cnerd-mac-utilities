@@ -4,5 +4,5 @@
 // release.sh refuses to build a version that already has a release tag.
 // CURRENT_PROJECT_VERSION is the build number. build.sh raises it by one on every build, and so
 // does every version change, so the app always shows which build is running: "1.1.0 (12)".
-MARKETING_VERSION = 1.3.0
-CURRENT_PROJECT_VERSION = 12
+MARKETING_VERSION = 1.4.0
+CURRENT_PROJECT_VERSION = 14

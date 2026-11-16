@@ -14,6 +14,7 @@ final class AppSettings {
         case windowShortcutsEnabled = "windowManager.shortcutsEnabled"
         case shortcuts = "windowManager.shortcuts"
         case finderEnabled = "finder.enabled"
+        case finderQuickFolders = "finder.quickFolders"
         case desktopEnabled = "desktop.enabled"
         case desktopSortOrder = "desktop.sortOrder"
         case showMenuBarIcon = "general.showMenuBarIcon"
@@ -56,6 +57,9 @@ final class AppSettings {
 
     // Finder Enhancements
     var finderEnabled: Bool { didSet { store(finderEnabled, .finderEnabled) } }
+    /// Folders the person added to the quick folders, in order. Paths inside the home folder
+    /// start with "~". See `QuickFolders`.
+    var finderQuickFolders: [String] { didSet { store(finderQuickFolders, .finderQuickFolders) } }
 
     // Desktop Manager
     var desktopEnabled: Bool { didSet { store(desktopEnabled, .desktopEnabled) } }
@@ -148,6 +152,7 @@ final class AppSettings {
         windowShortcutsEnabled = defaults.bool(forKey: Key.windowShortcutsEnabled.rawValue)
         shortcuts = Self.loadShortcuts(from: defaults)
         finderEnabled = defaults.bool(forKey: Key.finderEnabled.rawValue)
+        finderQuickFolders = defaults.stringArray(forKey: Key.finderQuickFolders.rawValue) ?? []
         desktopEnabled = defaults.bool(forKey: Key.desktopEnabled.rawValue)
         desktopSortOrder = DesktopSortOrder(rawValue: defaults.string(forKey: Key.desktopSortOrder.rawValue) ?? "") ?? .name
         taskbarEnabled = defaults.bool(forKey: Key.taskbarEnabled.rawValue)
@@ -199,6 +204,7 @@ final class AppSettings {
             windowShortcutsEnabled: windowShortcutsEnabled,
             shortcuts: Dictionary(uniqueKeysWithValues: shortcuts.map { ($0.key.rawValue, $0.value) }),
             finderEnabled: finderEnabled,
+            finderQuickFolders: finderQuickFolders,
             desktopEnabled: desktopEnabled,
             desktopSortOrder: desktopSortOrder.rawValue,
             taskbarEnabled: taskbarEnabled,
@@ -244,6 +250,7 @@ final class AppSettings {
                 shortcuts = result
             }
             if let value = snapshot.finderEnabled { finderEnabled = value }
+            if let value = snapshot.finderQuickFolders { finderQuickFolders = value }
             if let value = snapshot.desktopEnabled { desktopEnabled = value }
             if let value = snapshot.desktopSortOrder.flatMap(DesktopSortOrder.init(rawValue:)) { desktopSortOrder = value }
 

@@ -11,7 +11,17 @@ final class FinderController: UtilityModule {
     }
 
     let sidebarItem = SidebarItem.finderEnhancements
-    let quickFolders = QuickFolder.standard
+    private let standardFolders = QuickFolder.standard
+
+    /// The built-in folders, then the ones the person added.
+    var quickFolders: [QuickFolder] {
+        standardFolders + settings.finderQuickFolders.map { QuickFolder.custom(storedPath: $0) }
+    }
+
+    /// The folders for Finder's right-click menu on the taskbar. Empty while this module is off.
+    var menuFolders: [QuickFolder] {
+        settings.finderEnabled ? quickFolders : []
+    }
 
     /// Mirrors Finder's own "show hidden files" preference.
     private(set) var hiddenFilesVisible = false
@@ -164,8 +174,54 @@ final class FinderController: UtilityModule {
 
     // MARK: - Quick folders
 
+    /// Opens the folder in Finder. Finder does the opening, so this app needs no permission
+    /// for the folder, and never looks inside it.
     func open(_ folder: QuickFolder) {
         guard settings.finderEnabled else { return }
-        NSWorkspace.shared.open(folder.url)
+        guard !NSWorkspace.shared.open(folder.url) else { return }
+        // Wait a turn, so a right-click menu on the taskbar has closed before the message shows.
+        Task { @MainActor in
+            NSApp.activate()
+            let alert = NSAlert()
+            alert.messageText = "\u{201C}\(folder.title)\u{201D} could not be opened."
+            alert.informativeText = "The folder may have been moved or deleted, or it is on a disk that is not connected.\n\n\(folder.url.path)"
+            alert.runModal()
+        }
+    }
+
+    /// Asks which folders to add, then adds them to the end of the quick folders.
+    func addFoldersWithPanel() {
+        guard settings.finderEnabled else { return }
+        // Wait a turn, so a right-click menu on the taskbar has closed before the chooser opens.
+        Task { @MainActor [weak self] in
+            let panel = NSOpenPanel()
+            panel.title = "Add Quick Folders"
+            panel.prompt = "Add"
+            panel.message = "Choose the folders to add to your quick folders."
+            panel.canChooseDirectories = true
+            panel.canChooseFiles = false
+            panel.allowsMultipleSelection = true
+            // The taskbar never takes the keyboard, so bring this app forward for the chooser.
+            NSApp.activate()
+            guard panel.runModal() == .OK else { return }
+            self?.addFolders(panel.urls)
+        }
+    }
+
+    /// Adds folders. One that is already in the list, built in or added, is not added twice.
+    func addFolders(_ urls: [URL]) {
+        let folders = QuickFolders.adding(
+            urls.filter(\.isFileURL).map(\.path),
+            to: settings.finderQuickFolders,
+            builtIn: standardFolders.map(\.url.path)
+        )
+        if folders != settings.finderQuickFolders { settings.finderQuickFolders = folders }
+    }
+
+    /// Takes a folder the person added off the list. The folder itself is not touched.
+    func removeFolder(_ folder: QuickFolder) {
+        guard folder.isCustom else { return }
+        let stored = String(folder.id.dropFirst("custom:".count))
+        settings.finderQuickFolders = QuickFolders.removing(stored, from: settings.finderQuickFolders)
     }
 }

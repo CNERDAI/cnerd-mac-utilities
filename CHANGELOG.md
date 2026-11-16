@@ -3,6 +3,19 @@
 Every release is listed here, newest first. The version comes from `Config/Version.xcconfig`
 and is changed with `./version.sh`. See "Versions and releases" in the README.
 
+## 1.4.0 (2026-11-15)
+
+### New
+
+- **Quick folders in Finder's right-click menu.** Right-click Finder on the taskbar and the menu starts with your quick folders: Home, Documents, Downloads, Desktop, and Applications. One click opens the folder in Finder.
+- **Add your own folders.** Choose Add Folder in that menu, or in Finder Enhancements, and pick any folder, or several at once. Remove them again in Finder Enhancements. Removing only takes the folder off the list.
+- Your added folders are part of a settings file, so they move to another Mac with Export and Import.
+
+### Notes
+
+- The folders show in Finder's menu only while Finder Enhancements is on.
+- The app never looks inside your folders. Finder opens them.
+
 ## 1.3.0 (2026-11-15)
 
 ### New

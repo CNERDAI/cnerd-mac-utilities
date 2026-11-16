@@ -51,6 +51,9 @@ final class TaskbarController: UtilityModule {
     @ObservationIgnored private(set) var draggedGroupID: String?
     /// Opens the main window on one settings screen. Set by `AppEnvironment`.
     @ObservationIgnored var showSettings: ((SidebarItem) -> Void)?
+    /// The quick folders for Finder's right-click menu. Set by `AppEnvironment` from the Finder
+    /// module, so the taskbar does not depend on that module.
+    @ObservationIgnored var finderFolders: FinderFolderActions?
 
     /// The pop-up that is open, if any: Hidden Apps, or the More pop-up of one taskbar.
     private(set) var shownPopup: TaskbarPopup?
@@ -82,6 +85,8 @@ final class TaskbarController: UtilityModule {
     @ObservationIgnored private let ownIcon: NSImage? = TaskbarController.makeOwnIcon()
 
     private static let dockBundleID = "com.apple.dock"
+    /// Finder's bundle identifier. Its right-click menu on the taskbar also lists the quick folders.
+    static let finderAppID = "com.apple.finder"
     /// With this delay the hidden Dock never slides back in when the pointer touches its edge.
     private static let dockOffDelay: Double = 1000
 

@@ -76,6 +76,18 @@ enum DockPosition: String, CaseIterable, Identifiable, Sendable {
     }
 }
 
+/// What Finder's right-click menu on the taskbar can do with the quick folders.
+@MainActor
+struct FinderFolderActions {
+    /// The folders to list. Empty while Finder Enhancements is off, and the menu then leaves them out.
+    var folders: () -> [QuickFolder]
+    var open: (QuickFolder) -> Void
+    /// Asks which folders to add.
+    var add: () -> Void
+    /// Opens the settings screen where folders are added and removed.
+    var edit: () -> Void
+}
+
 /// One app shown on the taskbar: running, kept on the taskbar, or both.
 struct TaskbarApp: Identifiable, Equatable {
     /// The bundle identifier, or "pid:123" for the rare app that has none.

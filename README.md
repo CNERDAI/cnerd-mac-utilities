@@ -22,7 +22,7 @@ If it saves you time, you can [support development with a donation](https://cner
 7. **Auto-fit.** Too many apps? Names hide, icons shrink, and the rest go behind a "+N" button.
 8. **Hidden apps.** Tuck running apps behind one button that shows how many are running.
 9. **One switch back to the Apple Dock.** And one switch to return to the taskbar.
-10. **Finder tools.** Show hidden files and copy a file's full path.
+10. **Finder tools.** Quick folders in Finder's right-click menu, show hidden files, and copy a file's full path.
 
 The full list is next.
 
@@ -95,6 +95,7 @@ Every module has its own on and off switch. When a module is off it does nothing
 - Move to Group
 - Show on Display and Remove from This Display
 - Show in Finder
+- On Finder: your Quick Folders, Add Folder, and Edit Quick Folders
 
 **The Apple Dock**
 
@@ -106,7 +107,7 @@ Every module has its own on and off switch. When a module is off it does nothing
 
 - **Show Hidden Files.** The app asks before it restarts Finder.
 - **Copy Selected File Path.** Copies the full path of the files or folders selected in Finder. Also in the menu bar icon's menu.
-- **Quick Access Folders.** Home, Documents, Downloads, Desktop, and Applications.
+- **Quick Folders.** Home, Documents, Downloads, Desktop, and Applications, plus any folders you add. They are one right-click away: right-click Finder on the taskbar and the menu starts with them, with Add Folder at the end.
 
 ### Desktop Manager
 

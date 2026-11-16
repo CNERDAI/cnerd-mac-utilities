@@ -4,6 +4,8 @@ import SwiftUI
 /// One line of a right-click menu on the taskbar.
 enum TaskbarMenuItem {
     case button(String, action: @MainActor () -> Void)
+    /// A line with a small picture in front, such as a folder. `symbol` is an SF Symbol name.
+    case item(String, symbol: String, action: @MainActor () -> Void)
     /// A line with a check mark. The action gets the new state.
     case toggle(String, isOn: Bool, action: @MainActor (Bool) -> Void)
     case submenu(String, [TaskbarMenuItem])
@@ -29,6 +31,10 @@ enum TaskbarMenuBuilder {
             switch item {
             case .button(let title, let action):
                 menu.addItem(ClosureMenuItem(title: title, handler: action))
+            case .item(let title, let symbol, let action):
+                let line = ClosureMenuItem(title: title, handler: action)
+                line.image = NSImage(systemSymbolName: symbol, accessibilityDescription: nil)
+                menu.addItem(line)
             case .toggle(let title, let isOn, let action):
                 let line = ClosureMenuItem(title: title) { action(!isOn) }
                 line.state = isOn ? .on : .off

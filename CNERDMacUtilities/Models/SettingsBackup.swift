@@ -17,6 +17,8 @@ struct SettingsSnapshot: Codable, Equatable, Sendable {
 
     // Finder Enhancements
     var finderEnabled: Bool?
+    /// Folders added to the quick folders. Paths inside the home folder start with "~".
+    var finderQuickFolders: [String]?
 
     // Desktop Manager
     var desktopEnabled: Bool?

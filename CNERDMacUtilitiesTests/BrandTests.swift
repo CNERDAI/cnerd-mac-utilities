@@ -78,6 +78,10 @@ final class ScreenDrawingTests: XCTestCase {
         try draw("general", size: NSSize(width: 640, height: 1500)) { GeneralSettingsView() }
     }
 
+    func testFinderSettingsDraws() throws {
+        try draw("finder", size: NSSize(width: 640, height: 1100)) { FinderSettingsView() }
+    }
+
     func testTheMainWindowDraws() throws {
         try draw("window", size: NSSize(width: 900, height: 640)) { MainWindowView() }
     }

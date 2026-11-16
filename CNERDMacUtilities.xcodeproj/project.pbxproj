@@ -12,6 +12,7 @@
 		0955F85FF5FBD9CD76BF519F /* AppSymbol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 253D2DDD1EB783E35D4C74B9 /* AppSymbol.swift */; };
 		0ADDCB849AD4AEBB28EB9343 /* AccessibilityWindowService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BE0012217EB9446A1A22D69 /* AccessibilityWindowService.swift */; };
 		0DEF98BD24EDF63C98792FA4 /* TaskbarMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73819762EF7DEADC3A0DDC1F /* TaskbarMenu.swift */; };
+		0F3FEC4693F8A75B1D917694 /* QuickFolderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760954F91F7FB565E74FB55D /* QuickFolderTests.swift */; };
 		127F1762F73B0D74D92B0FCA /* GeneralSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25819696621245BE6761785C /* GeneralSettingsView.swift */; };
 		158C761DDD0BFD2A7366239B /* SupportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CC8C9F6F9568E3E952EC99C /* SupportTests.swift */; };
 		1CF4FAD58886C28D42AEBE09 /* AppIconsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B41565F4A745F496D73680 /* AppIconsSettingsView.swift */; };
@@ -107,6 +108,7 @@
 		72139D9D27208280553DF6E7 /* TaskbarPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskbarPanel.swift; sourceTree = "<group>"; };
 		73819762EF7DEADC3A0DDC1F /* TaskbarMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskbarMenu.swift; sourceTree = "<group>"; };
 		73B33A8C89735C17720EB0FF /* BrandTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandTests.swift; sourceTree = "<group>"; };
+		760954F91F7FB565E74FB55D /* QuickFolderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickFolderTests.swift; sourceTree = "<group>"; };
 		7A9A8AF5D467BF2C206E077B /* WindowFrameStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowFrameStore.swift; sourceTree = "<group>"; };
 		7CC8C9F6F9568E3E952EC99C /* SupportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportTests.swift; sourceTree = "<group>"; };
 		7D67757BE38CA4493143DF34 /* FinderController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderController.swift; sourceTree = "<group>"; };
@@ -165,6 +167,7 @@
 			children = (
 				73B33A8C89735C17720EB0FF /* BrandTests.swift */,
 				94191225FD58D2AD780672D6 /* ModelTests.swift */,
+				760954F91F7FB565E74FB55D /* QuickFolderTests.swift */,
 				62A8B941233EE07B1A785925 /* ScreenGeometryTests.swift */,
 				9D8B28E72609F756DF35D557 /* SettingsBackupTests.swift */,
 				7CC8C9F6F9568E3E952EC99C /* SupportTests.swift */,
@@ -474,6 +477,7 @@
 			files = (
 				38C64BB335F19543D65E0029 /* BrandTests.swift in Sources */,
 				B2412B3CBE43676DFCAB0376 /* ModelTests.swift in Sources */,
+				0F3FEC4693F8A75B1D917694 /* QuickFolderTests.swift in Sources */,
 				5CB8C5BE082B1EC4402D867C /* ScreenGeometryTests.swift in Sources */,
 				3A1A95B76DBE80D5991BAA4A /* SettingsBackupTests.swift in Sources */,
 				158C761DDD0BFD2A7366239B /* SupportTests.swift in Sources */,

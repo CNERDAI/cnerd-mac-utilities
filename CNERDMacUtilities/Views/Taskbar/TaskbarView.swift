@@ -371,6 +371,19 @@ private struct TaskbarAppCell: View {
     /// Mirrors the Dock's right-click menu.
     private var menu: [TaskbarMenuItem] {
         var items: [TaskbarMenuItem] = []
+        // Finder's menu starts with the quick folders, like File Explorer's list on Windows.
+        if app.id == TaskbarController.finderAppID, let finder = controller.finderFolders {
+            let folders = finder.folders()
+            if !folders.isEmpty {
+                items.append(.note("Quick Folders"))
+                for folder in folders {
+                    items.append(.item(folder.title, symbol: folder.symbolName) { finder.open(folder) })
+                }
+                items.append(.button("Add Folder…") { finder.add() })
+                items.append(.button("Edit Quick Folders…") { finder.edit() })
+                items.append(.divider)
+            }
+        }
         if app.isRunning {
             items.append(.button("Show All Windows") { controller.showAllWindows(of: app) })
             items.append(.button("Hide") { controller.hide(app) })

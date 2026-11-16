@@ -59,11 +59,17 @@ struct FinderSettingsView: View {
             }
             .disabled(!settings.finderEnabled)
 
-            Section("Quick Access Folders") {
+            Section {
                 ForEach(finder.quickFolders) { folder in
                     LabeledContent {
-                        Button("Open") { finder.open(folder) }
-                            .accessibilityLabel("Open \(folder.title) in Finder")
+                        HStack {
+                            Button("Open") { finder.open(folder) }
+                                .accessibilityLabel("Open \(folder.title) in Finder")
+                            if folder.isCustom {
+                                Button("Remove") { finder.removeFolder(folder) }
+                                    .accessibilityLabel("Remove \(folder.title) from the quick folders")
+                            }
+                        }
                     } label: {
                         Label {
                             SettingLabel(title: folder.title, description: folder.url.path)
@@ -73,6 +79,17 @@ struct FinderSettingsView: View {
                         }
                     }
                 }
+                SettingRow("Add a Folder", description: "Pick any folder, and it joins the list. Pick several at once if you like.") {
+                    Button {
+                        finder.addFoldersWithPanel()
+                    } label: {
+                        Label("Add Folder…", systemImage: AppSymbol.add)
+                    }
+                }
+            } header: {
+                Text("Quick Folders")
+            } footer: {
+                Text("These folders are also in Finder's right-click menu on the taskbar, where Add Folder is one click away. Removing a folder here only takes it off the list. The folder itself is not touched.")
             }
             .disabled(!settings.finderEnabled)
         }
